@@ -48,23 +48,3 @@ Fiber.result= function( value ){
     done( done.result= value )
   }
 }
-
-Fiber.async= function( func, args ){
-  return function( done, fail ){
-    try {
-      done( func.apply( this, args || [] ) )
-    } catch( exception ){
-      fail( exception )
-    }
-  }
-}
-
-Fiber.pipe= function( ){
-  let fiberList= arguments
-  return Fiber( function( done, fail ){
-    for( var i= 0; i < fiberList.length; ++i ){
-      yield fiberList[ i ]
-    }
-  })
-}
-

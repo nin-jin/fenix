@@ -1,3 +1,4 @@
+"use strict"
 Components.utils.import( 'resource://fenix/fenix.jsm' )
 
 function FiberMap( map ){

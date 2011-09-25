@@ -1,3 +1,4 @@
+"use strict"
 Components.utils.import( 'resource://fenix/fenix.jsm' )
 
 let Timer = $Constructor( "@mozilla.org/timer;1", 'Ci.nsITimer', 'initWithCallback' )
