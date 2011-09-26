@@ -1,1 +1,2 @@
-resorce fenix ./
+resource fenix               ./ # for common environment: resource://fenix/fenix.jsm
+resource {your ext id}-fenix ./ # your version of fenix modules

@@ -9,8 +9,16 @@ function FiberMap( map ){
     
     for( var key in map ){
       if( !map.hasOwnProperty( key ) ) continue;
+      
       ++ballance;
-      map[ key ]( receiver( key ), catcher( key ) )
+      let receive= receiver( key )
+      let catche= catcher( key )
+      
+      try {
+        map[ key ]( receive, catche )
+      } catch( exception ){
+        catche( exception )
+      }
     }
     
     subdone()

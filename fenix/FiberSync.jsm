@@ -1,7 +1,7 @@
 "use strict"
 Components.utils.import( 'resource://fenix/fenix.jsm' )
 
-function FiberFunc( func ){
+function FiberSync( func ){
   return function fibered_func( ){
     let self= this
     let args= arguments

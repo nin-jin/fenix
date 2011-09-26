@@ -1,6 +1,6 @@
 "use strict"
 
-const EXPORTED_SYMBOLS = [ 'EXPORTED_SYMBOLS', '$class', '$Constructor', '$iface', '$result', '$utils', '$fenix' ]
+const EXPORTED_SYMBOLS= [ 'EXPORTED_SYMBOLS', '$class', '$Constructor', '$iface', '$result', '$utils', '$Autoload' ]
 
 const $class= Components.classes
 const $Constructor= Components.Constructor
@@ -8,32 +8,28 @@ const $iface= Components.interfaces
 const $result= Components.results
 const $utils= Components.utils
 
-$utils.import( ( __URI__ && __URI__.spec || __LOCATION__ && __LOCATION__.path ).replace( /([&\\/]*)$/, 'Modules.jsm' ) )
-$utils.import("resource://gre/modules/XPCOMUtils.jsm");
+$utils.import( 'resource://gre/modules/XPCOMUtils.jsm' )
 
+const $Autoload = this.Proxy ? Autoload4 : Autoload3
+const $fenix= $Autoload( this ).$follow( 'fenix' )
 
-const IOService = $class["@mozilla.org/network/io-service;1"].getService($iface.nsIIOService);
-const Modules = this.Proxy ? Modules4 : Modules3;
-
-const $fenix= Modules( this )
-
-function Modules4(baseURI) {
+function Autoload4( baseURI ){
     if (typeof baseURI == "string") {
-        baseURI = IOService.newURI(baseURI, null, null);
+        baseURI = $fenix.service.io.newURI(baseURI, null, null);
     } else if (baseURI.__URI__) {
-        baseURI = IOService.newURI(baseURI.__URI__, null, null);
+        baseURI = $fenix.service.io.newURI(baseURI.__URI__, null, null);
     } else if (baseURI.__LOCATION__) {
-        baseURI = IOService.newFileURI(baseURI.__LOCATION__.parent);
+        baseURI = $fenix.service.io.newFileURI(baseURI.__LOCATION__.parent);
     }
     
     let proto = new function() {
         this.$follow = function(relativePath) {
-            return Modules(baseURI.resolve(relativePath + "/"));
+            return Autoload(baseURI.resolve(relativePath + "/"));
         }
     }
     
     return Proxy.create( new function() {
-        this.get = function Modules__get(proxy, name) {
+        this.get= function( proxy, name ){
             if (name[0] === "$") return proto[name];
             let url = baseURI.resolve(name + ".jsm");
             return Cu.import(url, {})[name];
@@ -41,7 +37,7 @@ function Modules4(baseURI) {
     })
 }
 
-function Modules3(context) {
+function Autoload3(context) {
     let aDir = context.__LOCATION__ || context;
     if (!aDir.isDirectory()) aDir = aDir.parent;
     
@@ -56,7 +52,7 @@ function Modules3(context) {
             if (name === file.leafName) continue;
             
             XPCOMUtils.defineLazyGetter(this, name, function() {
-                let url = IOService.newFileURI(file).spec;
+                let url = $fenix.service.io.newFileURI(file).spec;
                 return Cu.import(url, {})[name];
             });
 
@@ -71,7 +67,7 @@ function Modules3(context) {
                 if (name === "..") newDir = newDir.parent;
                 else newDir.append(name);
             }
-            return Modules(newDir);
+            return Autoload(newDir);
         }
         
     }
