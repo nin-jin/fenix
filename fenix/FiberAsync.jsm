@@ -18,7 +18,7 @@ function FiberAsync( start ){
         try {
           var sub = arguments.length ? context.send( arg ) : context.next()
         } catch( exception ){
-          if( exception instanceof StopIteration ) return done( step.result )
+          if( exception instanceof StopIteration ) return done( arg )
           fail( exception )
           return
         }
