@@ -1,5 +1,6 @@
 "use strict"
 Components.utils.import( 'resource://fenix/fenix.jsm' )
+const $fenix= $.Autoload( this )
 
 function FiberPipe( func ){
   let fiberList= arguments

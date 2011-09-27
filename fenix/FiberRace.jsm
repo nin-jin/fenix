@@ -1,10 +1,9 @@
 "use strict"
 Components.utils.import( 'resource://fenix/fenix.jsm' )
 
-function FiberMap( map ){
+function FiberRace( map ){
   return function( done, fail ){
     var result= []
-    var errors
     var ballance= 1
     
     for( var key in map ){
@@ -32,15 +31,14 @@ function FiberMap( map ){
     
     function catcher( key ){
       return function( exception ){
-        if( !errors ) errors= []
-        errors[ key ]= exception
+        result.__defineGetter__( key, function(){ throw exception } )
         subdone()
       }
     }
     
     function subdone( ){
       if( --ballance ) return
-      done([ result, errors ])
+      done( result )
     }
     
   }

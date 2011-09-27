@@ -1,17 +1,20 @@
 "use strict"
 
-const EXPORTED_SYMBOLS= [ 'EXPORTED_SYMBOLS', '$class', '$Constructor', '$iface', '$result', '$utils', '$Autoload' ]
+const EXPORTED_SYMBOLS= [ 'EXPORTED_SYMBOLS', '$' ]
 
-const $class= Components.classes
-const $Constructor= Components.Constructor
-const $iface= Components.interfaces
-const $result= Components.results
-const $utils= Components.utils
+const $= {}
 
-$utils.import( 'resource://gre/modules/XPCOMUtils.jsm' )
+$.klass= Components.classes
+$.Maker= Components.Constructor
+$.iface= Components.interfaces
+$.result= Components.results
+$.utils= Components.utils
 
-const $Autoload = this.Proxy ? Autoload4 : Autoload3
-const $fenix= $Autoload( this ).$follow( 'fenix' )
+$.Autoload = this.Proxy ? Autoload4 : Autoload3
+
+const $fenix= $.Autoload( this ).$follow( 'fenix' )
+
+$.utils.import( 'resource://gre/modules/XPCOMUtils.jsm' )
 
 function Autoload4( baseURI ){
     if (typeof baseURI == "string") {

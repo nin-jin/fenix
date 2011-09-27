@@ -1,6 +1,6 @@
 "use strict"
 Components.utils.import( 'resource://fenix/fenix.jsm' )
-const $fenix= $Modules( this )
+const $fenix= $.Autoload( this )
 
 function FiberAsync( start ){
   return function( ){
