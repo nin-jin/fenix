@@ -12,9 +12,11 @@ $.util= Components.utils
 
 $.util.import( 'resource://gre/modules/XPCOMUtils.jsm' )
 
-$.Autoload = this.Proxy ? Autoload4 : Autoload3
+$.Autoload= this.Proxy ? Autoload4 : Autoload3
 
 const $io= $.klass[ "@mozilla.org/network/io-service;1" ].getService( $.iface.nsIIOService )
+
+const cache= {}
 
 function Autoload4( baseURI ){
     if (typeof baseURI == "string") {
@@ -25,13 +27,16 @@ function Autoload4( baseURI ){
         baseURI = $io.newFileURI(baseURI.__LOCATION__.parent);
     }
     
+    let instance= cache[ baseURI.spec ]
+    if( instance ) return instance
+    
     let proto = new function() {
         this.$follow = function(relativePath) {
             return $.Autoload(baseURI.resolve(relativePath + "/"));
         }
     }
     
-    return Proxy.create( new function() {
+    return cache[ baseURI.spec ]= Proxy.create( new function() {
         this.get= function( proxy, name ){
             if (name[0] === "$") return proto[name];
             let url = baseURI.resolve(name + ".jsm");
@@ -44,7 +49,10 @@ function Autoload3(context) {
     let aDir = context.__LOCATION__ || context
     if (!aDir.isDirectory()) aDir = aDir.parent;
     
-    return new function() {
+    let instance= cache[ aDir.path ]
+    if( instance ) return instance
+    
+    return cache[ aDir.path ]= new function() {
 
         let i = aDir.directoryEntries;
         while (i.hasMoreElements()) {
