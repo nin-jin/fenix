@@ -1,6 +1,5 @@
 "use strict"
-Components.utils.import( 'resource://fenix/fenix.jsm' )
-const $fenix= $Modules( this )
+Components.utils.import( 'resource://fenix/this.jsm' )
 
 const service= new function(){
 
