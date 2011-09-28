@@ -10,7 +10,7 @@ function FiberAsync( start ){
   
       if( !fail ) fail= $fenix.logError
   
-      var context = start.apply( self, arguments )
+      var context = start.apply( self, arg )
   
       step()
   

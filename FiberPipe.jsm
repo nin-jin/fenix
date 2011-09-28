@@ -2,7 +2,7 @@
 Components.utils.import( 'resource://fenix/this.jsm' )
 const $fenix= $.Autoload( this )
 
-function FiberPipe( func ){
+function FiberPipe( ){
   let fiberList= arguments
   return $fenix.FiberAsync( function( done, fail ){
     for( var i= 0; i < fiberList.length; ++i ){
