@@ -1,8 +1,9 @@
 "use strict"
 Components.utils.import( 'resource://fenix/this.jsm' )
+const $fenix= $.Autoload( this )
 
 function FiberRace( map ){
-  return function( done, fail ){
+  return $fenix.Fiber( function( done, fail ){
     var result= []
     var ballance= 1
     
@@ -38,8 +39,8 @@ function FiberRace( map ){
     
     function subdone( ){
       if( --ballance ) return
-      done( result )
+      done && done( result )
     }
     
-  }
+  } )
 }

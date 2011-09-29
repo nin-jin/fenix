@@ -6,19 +6,19 @@ function FiberAsync( start ){
   return function( ){
     let self= this
     let arg= arguments
-    return function( done, fail ){
-  
-      if( !fail ) fail= $fenix.logError
-  
+    return $fenix.Fiber( function( done, fail ){
+
       var context = start.apply( self, arg )
+      var res
   
       step()
   
       function step( arg ){
+        res= arg
         try {
           var sub = arguments.length ? context.send( arg ) : context.next()
         } catch( exception ){
-          if( exception instanceof StopIteration ) return done( arg )
+          if( exception instanceof StopIteration ) return done( res )
           fail( exception )
           return
         }
@@ -34,11 +34,11 @@ function FiberAsync( start ){
         try {
           var sub= context.throw( exception )
         } catch( exception ){
-          if( exception instanceof StopIteration ) return done( step.result )
+          if( exception instanceof StopIteration ) return done( res )
           fail( exception )
         }
       }
   
-    }
+    } )
   }
 }

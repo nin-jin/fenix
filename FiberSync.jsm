@@ -1,17 +1,17 @@
 "use strict"
 Components.utils.import( 'resource://fenix/this.jsm' )
+const $fenix= $.Autoload( this )
 
-function FiberSync( func ){
-  return function fibered_func( ){
+const FiberSync= function( func ){
+  return function( ){
+
     let self= this
     let args= arguments
-    return function fiber( done, fail ){
-      try {
-        done( func.apply( self, args ) )
-      } catch( exception ){
-        fail( exception )
-      }
-    }
+
+    return $fenix.Fiber( function( done, fail ){
+      done( func.apply( self, args ) )
+    })
+
   }
 }
 
