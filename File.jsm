@@ -2,9 +2,6 @@
 Components.utils.import( 'resource://fenix/this.jsm' )
 const $fenix= $.Autoload( this )
 
-Components.utils.import("resource://gre/modules/NetUtil.jsm");
-Components.utils.import("resource://gre/modules/FileUtils.jsm");
-
 const File = $fenix.Factory( new function() {
     
     this.init = function( file ){
@@ -84,17 +81,17 @@ const File = $fenix.Factory( new function() {
     
     this.text=
     $fenix.Poly
-    (   function( ){
+    (   $fenix.FiberAsync( function( ){
             let self= this
             return $fenix.Fiber( function( done, fail ){
                 
-                let callback= function( inputStream, status ){
+                let callback= function( input, status ){
                     try {
                         if( !Components.isSuccessCode( status ) ){
-                            fail( status )
+                            throw new Error( 'Read from [' + this.path + '] was ended with status [' + status + ']' )
                         } else {
-                            let size= inputStream.available()
-                            let convStream= $fenix.create.converterInput( inputStream, null, size, null )
+                            let size= input.available()
+                            let convStream= $fenix.create.converterInput( input, null, size, null )
                             try {
                                 let data= {}
                                 convStream.readString( size, data )
@@ -108,53 +105,64 @@ const File = $fenix.Factory( new function() {
                     }
                 }
                 
-                NetUtil.asyncFetch( self.nsIChannel, callback );
+                $fenix.module.NetUtil.asyncFetch( self.nsIChannel, callback );
                 
             })
-        }
+        } )
     ,   function( value ){
             let self= this
             return $fenix.Fiber( function( done, fail ){
                 
-                let output = FileUtils.openSafeFileOutputStream( self.nsIFile )
+                let output = $fenix.module.FileUtils.openSafeFileOutputStream( self.nsIFile )
                 
                 let converter= $fenix.create.converterUnicode()
                 converter.charset= 'UTF-8'
                 let input= converter.convertToInputStream( value )
                 
                 let callback= function( status ){
-                  if( Components.isSuccessCode( status ) ) done( status )
-                  else fail( status )
+                  if( Components.isSuccessCode( status ) ) done( self )
+                  else throw new Error( 'Write to [' + this.path + '] was ended with status [' + status + ']' )
                 }
                 
-                NetUtil.asyncCopy( input, output, callback )
+                $fenix.module.NetUtil.asyncCopy( input, output, callback )
 
             })
         }
     )
     
-    this.xml=
+    this.json=
     $fenix.Poly
     (   $fenix.FiberAsync( function( ){
             let text= yield this.text()
-            text= text.replace(/^<\?xml\s+.*?\?>/, ""); // bug 336551
-            let xml= new XML( text )
+            let xml= JSON.parse( text )
             yield $fenix.FiberValue( xml )
         } )
     ,   function( value ){
-            return this.text( String( value ) )
+            let text= JSON.stringify( value )
+            return this.text( text )
         }
     )
-
+    
     this.dom=
     $fenix.Poly
     (   function( ){
-            return common.api.XMLUtils.xmlDocFromFile(this.nsIFile, true).documentElement;
+            return $fenix.Dom.fromChannel( this.nsIChannel )
         }
     ,   function( value ){
-            let text = common.api.XMLUtils.serializeNode(dom);
-            common.api.Files.writeTextFile(this.create().nsIFile, text);
-            return this;
+            return this.text( $fenix.Dom( value ).toXMLString() )
+        }
+    )
+
+    this.xml=
+    $fenix.Poly
+    (   $fenix.FiberAsync( function( ){
+            let dom= yield this.dom()
+            let xml= new XML( dom.toXMLString() )
+            yield $fenix.FiberValue( xml )
+        } )
+    ,   function( value ){
+            let text= value.toXMLString()
+            return this.text( text )
         }
     )
 
