@@ -5,6 +5,7 @@ const $fenix= $.Autoload( this )
 const File = $fenix.Factory( new function() {
     
     this.init = function( file ){
+        if( typeof file === 'string' ) file= $fenix.create.fileLocal( file )
         if( file instanceof File ) file= file.nsIFile()
         
         this.nsIFile= function() file
@@ -197,7 +198,3 @@ const File = $fenix.Factory( new function() {
     )
 
 })
-
-File.fromPath= function( path ){
-    return File( $fenix.create.fileLocal( path ) )
-}
