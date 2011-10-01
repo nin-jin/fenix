@@ -5,28 +5,32 @@ const $fenix= $.Autoload( this )
 const Dom= $fenix.Factory( new function() {
     
     this.init= function( dom ){
-        if( dom instanceof Dom ) file= file.nsIDOMNode
+        if( dom instanceof Dom ) file= file.nsIDOMNode()
         
-        this.nsIDOMNode= dom
+        this.nsIDOMNode= function() dom
         
         return this
     }
     
-    this.toXMLString= function( ){
-        return $fenix.service.domSerializer.serializeToString( this.nsIDOMNode )
+    this.toXMLString=
+    function( ){
+        return $fenix.service.domSerializer.serializeToString( this.nsIDOMNode() )
+    }
+    
+    this.toXML=
+    function( ){
+        return new XML( this.toXMLString() )
     }
 
 })
 
-Dom.fromChannel= function( channel ){
+Dom.fromChannel= function( channel, principal ){
+    if( arguments.length < 2 ) principal= $fenix.create.systemPrincipal()
     return $fenix.Fiber( function( done, fail ){
-                
+        
         let callback= function( input, status ){
             try {
                 try {
-                    let security= $fenix.service.security
-                    let principal= security.getSystemPrincipal && security.getSystemPrincipal() || null
-                    
                     let domParser= $fenix.create.domParser( principal, channel.originalURI, null )
                     let doc= domParser.parseFromStream( input, null, input.available(), 'text/xml' )
                     let dom= doc.documentElement
@@ -45,7 +49,7 @@ Dom.fromChannel= function( channel ){
             }
         }
         
-        $fenix.module.NetUtil.asyncFetch( channel, callback )
+        $.gre.NetUtil.asyncFetch( channel, callback )
 
     } )
 }

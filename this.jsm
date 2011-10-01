@@ -2,21 +2,22 @@
 
 const EXPORTED_SYMBOLS= [ 'EXPORTED_SYMBOLS', '$' ]
 
+
 const $= {}
 
 $.klass= Components.classes
-$.Maker= Components.Constructor
 $.iface= Components.interfaces
-$.result= Components.results
 $.util= Components.utils
+$.Maker= Components.Constructor
 
 $.util.import( 'resource://gre/modules/XPCOMUtils.jsm' )
+const $io= $.klass[ "@mozilla.org/network/io-service;1" ].getService( $.iface.nsIIOService )
 
 $.Autoload= this.Proxy ? Autoload4 : Autoload3
 
-const $io= $.klass[ "@mozilla.org/network/io-service;1" ].getService( $.iface.nsIIOService )
-
 const cache= {}
+
+$.gre= $.Autoload( 'resource://gre/modules/' )
 
 function Autoload4( baseURI ){
     if (typeof baseURI == "string") {
@@ -47,7 +48,10 @@ function Autoload4( baseURI ){
 
 function Autoload3(context) {
     let aDir = context.__LOCATION__ || context
-    if (!aDir.isDirectory()) aDir = aDir.parent;
+    if( typeof aDir === 'string' ){
+        aDir= $io.newURI( aDir, null, null ).QueryInterface( $.iface.nsIFileURL ).file
+    }
+    if (!aDir.isDirectory()) aDir = aDir.parent
     
     let instance= cache[ aDir.path ]
     if( instance ) return instance

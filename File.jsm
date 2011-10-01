@@ -5,15 +5,21 @@ const $fenix= $.Autoload( this )
 const File = $fenix.Factory( new function() {
     
     this.init = function( file ){
-        if( file instanceof File ) file= file.nsIFile
+        if( file instanceof File ) file= file.nsIFile()
         
-        this.nsIFile= file
+        this.nsIFile= function() file
         
         return this
     }
+    
+    this.path=
+    function( ){
+        return this.nsIFile().path
+    }
 
-    this.follow = function( relativePath ){
-        let file = this.nsIFile.clone()
+    this.follow=
+    function( relativePath ){
+        let file = this.nsIFile().clone()
 
         let nameList = relativePath.split( '/' )
         for each( let name in nameList ){
@@ -26,59 +32,85 @@ const File = $fenix.Factory( new function() {
         return File( file )
     }
     
-    this.__defineGetter__( 'exists', function( ){
-        return this.nsIFile.exists() ? this : null
-    } )
-    
-    this.__defineSetter__( 'exists', function( value ){
-        if( this.exists === value ) return this
-
-        if( value ){
-            this.parent.dir= true
-            this.nsIFile.create( $.iface.nsIFile.NORMAL_FILE_TYPE, -1 )
-        } else {
-            this.nsIFile.remove( true )
+    this.exists=
+    $fenix.Poly
+    (   function( ){
+            return this.nsIFile().exists() ? this : null
         }
+    ,   function( value ){
+            if( this.exists() === value ) return this
+    
+            if( value ){
+                this.file( true )
+            } else {
+                this.nsIFile().remove( true )
+            }
+    
+            return this
+        }
+    )
+    
+    this.readable=
+    function( ){
+        return this.exists() && this.nsIFile().isReadable() ? this : null
+    }
+    
+    this.writable=
+    function( ){
+        return this.nsIFile().isWritable() ? this : null
+    }
+    
+    this.file=
+    $fenix.Poly
+    (   function( ){
+            return this.nsIFile().isFile() ? this : null
+        }
+    ,   function( value ){
+            if( !value ) throw new Error( 'Wrong value [' + value + ']' )
+            if( this.file() ) return this
+    
+            this.parent.dir( true )
+            this.nsIFile().create( $.iface.nsIFile.NORMAL_FILE_TYPE, -1 )
+    
+            return this;
+        }
+    )
+    
+    this.dir=
+    $fenix.Poly
+    (   function( ){
+            return this.nsIFile().isDirectory() ? this : null
+        }
+    ,   function( value ){
+            if( !value ) throw new Error( 'Wrong value [' + value + ']' )
+            if( this.dir() ) return this
+    
+            this.nsIFile().create( $.iface.nsIFile.DIRECTORY_TYPE, -1 )
+    
+            return this;
+        }
+    )
+    
+    this.mimeType=
+    function( ){
+        try {
+            return $fenix.service.mime.getTypeFromFile( this.nsIFile() )
+        } catch( exception ){
+            if( exception.name !== 'NS_ERROR_NOT_AVAILABLE' ) throw exception
+            return 'application/octet-stream'
+        }
+    }
+    
+    this.uri=
+    function( ){
+        return $fenix.Uri( $fenix.service.io.newFileURI( this.nsIFile() ) )
+    }
 
-        return this
-    } )
-    
-    this.__defineGetter__( 'readable', function( ){
-        return this.exists && this.nsIFile.isReadable() ? this : null
-    } )
-    
-    this.__defineGetter__( 'writable', function( ){
-        return this.nsIFile.isWritable() ? this : null
-    } )
-    
-    this.__defineGetter__( 'file', function( ){
-        return this.nsIFile.isFile() ? this : null
-    } )
-    
-    this.__defineGetter__( 'dir', function( ){
-        return this.nsIFile.isDirectory() ? this : null
-    } )
-    
-    this.__defineSetter__( 'dir', function( value ){
-        if( !value ) throw new Error( 'Wrong value [' + value + ']' )
-        if( this.dir ) return this
+    this.nsIChannel=
+    function( ){
+        return this.uri().nsIChannel()
+    }
 
-        common.api.Files.forceDirectories(this.follow("..").nsIFile);
-        return this;
-    } )
-    
-    this.__defineGetter__( 'nsIURI', function( ){
-        return $fenix.service.io.newFileURI( this.nsIFile )
-    } )
-
-    this.__defineGetter__( 'nsIChannel', function( ){
-        return $fenix.service.io.newChannelFromURI( this.nsIURI )
-    } )
-
-    this.__defineGetter__( 'dataURI', function( ){
-        return common.api.Files.getDataUri(this.nsIFile);
-    } )
-    
     this.text=
     $fenix.Poly
     (   $fenix.FiberAsync( function( ){
@@ -105,7 +137,7 @@ const File = $fenix.Factory( new function() {
                     }
                 }
                 
-                $fenix.module.NetUtil.asyncFetch( self.nsIChannel, callback );
+                $.gre.NetUtil.asyncFetch( self.nsIChannel(), callback );
                 
             })
         } )
@@ -113,7 +145,7 @@ const File = $fenix.Factory( new function() {
             let self= this
             return $fenix.Fiber( function( done, fail ){
                 
-                let output = $fenix.module.FileUtils.openSafeFileOutputStream( self.nsIFile )
+                let output = $.gre.FileUtils.openSafeFileOutputStream( self.nsIFile() )
                 
                 let converter= $fenix.create.converterUnicode()
                 converter.charset= 'UTF-8'
@@ -124,7 +156,7 @@ const File = $fenix.Factory( new function() {
                   else throw new Error( 'Write to [' + this.path + '] was ended with status [' + status + ']' )
                 }
                 
-                $fenix.module.NetUtil.asyncCopy( input, output, callback )
+                $.gre.NetUtil.asyncCopy( input, output, callback )
 
             })
         }
@@ -146,7 +178,7 @@ const File = $fenix.Factory( new function() {
     this.dom=
     $fenix.Poly
     (   function( ){
-            return $fenix.Dom.fromChannel( this.nsIChannel )
+            return $fenix.Dom.fromChannel( this.nsIChannel() )
         }
     ,   function( value ){
             return this.text( $fenix.Dom( value ).toXMLString() )
@@ -157,12 +189,10 @@ const File = $fenix.Factory( new function() {
     $fenix.Poly
     (   $fenix.FiberAsync( function( ){
             let dom= yield this.dom()
-            let xml= new XML( dom.toXMLString() )
-            yield $fenix.FiberValue( xml )
+            yield $fenix.FiberValue( dom.toXML() )
         } )
     ,   function( value ){
-            let text= value.toXMLString()
-            return this.text( text )
+            return this.text( value.toXMLString() )
         }
     )
 
