@@ -13,13 +13,13 @@ $.Maker= Components.Constructor
 $.util.import( 'resource://gre/modules/XPCOMUtils.jsm' )
 const $io= $.klass[ "@mozilla.org/network/io-service;1" ].getService( $.iface.nsIIOService )
 
-$.Autoload= this.Proxy ? Autoload4 : Autoload3
+$.Autoload= this.Proxy ? AutoloadFF4 : AutoloadFF3
 
 const cache= {}
 
 $.gre= $.Autoload( 'resource://gre/modules/' )
 
-function Autoload4( baseURI ){
+function AutoloadFF4( baseURI ){
     if (typeof baseURI == "string") {
         baseURI = $io.newURI(baseURI, null, null);
     } else if (baseURI.__URI__) {
@@ -46,7 +46,7 @@ function Autoload4( baseURI ){
     })
 }
 
-function Autoload3(context) {
+function AutoloadFF3(context) {
     let aDir = context.__LOCATION__ || context
     if( typeof aDir === 'string' ){
         aDir= $io.newURI( aDir, null, null ).QueryInterface( $.iface.nsIFileURL ).file
