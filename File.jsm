@@ -135,25 +135,23 @@ const File = $fenix.Factory( new function() {
             } 
         
         } )
-    ,   function( value ){
-            let self= this
-            return $fenix.Fiber( function( done, fail ){
-                
-                let output = $.gre.FileUtils.openSafeFileOutputStream( self.nsIFile() )
-                
-                let converter= $fenix.create.converterUnicode()
-                converter.charset= 'UTF-8'
-                let input= converter.convertToInputStream( value )
-                
-                let callback= function( status ){
-                  if( Components.isSuccessCode( status ) ) done( self )
-                  else throw new Error( 'Write to [' + this.path + '] was ended with status [' + status + ']' )
-                }
-                
-                $.gre.NetUtil.asyncCopy( input, output, callback )
+    ,   $fenix.Thread( function( value ){
 
-            })
-        }
+            let output = $.gre.FileUtils.openSafeFileOutputStream( self.nsIFile() )
+            
+            let converter= $fenix.create.converterUnicode()
+            converter.charset= 'UTF-8'
+            let input= converter.convertToInputStream( value )
+
+            var result= $fenix.Trigger()
+            $.gre.NetUtil.asyncCopy( input, output, result.done )
+            let [ status ]= yield result
+
+            if( !Components.isSuccessCode( status ) ){
+                throw new Error( 'Write to [' + this.path + '] was ended with status [' + status + ']' )
+            } 
+
+        } )
     )
     
     this.json=

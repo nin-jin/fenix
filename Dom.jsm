@@ -24,32 +24,31 @@ const Dom= $fenix.Factory( new function() {
 
 })
 
-Dom.fromChannel= function( channel, principal ){
+Dom.fromChannel=
+$fenix.Thread( function( channel, principal ){
+    
     if( arguments.length < 2 ) principal= $fenix.create.systemPrincipal()
-    return $fenix.Fiber( function( done, fail ){
+    
+    var result= $fenix.Trigger()
+    $.gre.NetUtil.asyncFetch( channel, result.done )
+    let [ input, status ]= yield result
+
+    if( !Components.isSuccessCode( status ) ){
+        throw new Error( 'Read from [' + channel.originalURI + '] was ended with status [' + status + ']' )
+    } 
+
+    try {
+        let domParser= $fenix.create.domParser( principal, channel.originalURI, null )
+        let doc= domParser.parseFromStream( input, null, input.available(), 'text/xml' )
+        let dom= doc.documentElement
         
-        let callback= function( input, status ){
-            try {
-                try {
-                    let domParser= $fenix.create.domParser( principal, channel.originalURI, null )
-                    let doc= domParser.parseFromStream( input, null, input.available(), 'text/xml' )
-                    let dom= doc.documentElement
-                    
-                    if( dom.namespaceURI === 'http://www.mozilla.org/newlayout/xml/parsererror.xml' ){
-                        throw new Error( dom.textContent )
-                    }
-                    
-                    done( Dom( dom ) );
-                }
-                finally {
-                    input.close();
-                }
-            } catch( exception ){
-                fail( exception )
-            }
+        if( dom.namespaceURI === 'http://www.mozilla.org/newlayout/xml/parsererror.xml' ){
+            throw new Error( dom.textContent )
         }
         
-        $.gre.NetUtil.asyncFetch( channel, callback )
+        yield $fenix.FiberValue( Dom( dom ) )
+    } finally {
+        input.close();
+    }
 
-    } )
-}
+} )
