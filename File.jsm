@@ -114,7 +114,7 @@ const File = $fenix.Factory( new function() {
 
     this.text=
     $fenix.Poly
-    (   $fenix.FiberAsync( function( ){
+    (   $fenix.Thread( function( ){
             let self= this
             return $fenix.Fiber( function( done, fail ){
                 
@@ -165,7 +165,7 @@ const File = $fenix.Factory( new function() {
     
     this.json=
     $fenix.Poly
-    (   $fenix.FiberAsync( function( ){
+    (   $fenix.Thread( function( ){
             let text= yield this.text()
             let xml= JSON.parse( text )
             yield $fenix.FiberValue( xml )
@@ -188,7 +188,7 @@ const File = $fenix.Factory( new function() {
 
     this.xml=
     $fenix.Poly
-    (   $fenix.FiberAsync( function( ){
+    (   $fenix.Thread( function( ){
             let dom= yield this.dom()
             yield $fenix.FiberValue( dom.toXML() )
         } )
