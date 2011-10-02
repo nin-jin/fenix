@@ -3,12 +3,27 @@ Components.utils.import( 'resource://fenix/this.jsm' )
 const $fenix= $.Autoload( this )
 
 function fail( e ){
-  if( e ){
-    let ee= $fenix.create.error( e, e.fileName || e.filename, null, e.lineNumber, null, $.iface.nsIScriptError.exceptionFlag, 'component javascript' )
-    $fenix.service.console.logMessage( ee )
-    if( e.stack ) $fenix.service.console.logMessage({ message: String( e.stack ) })
+  if( !e || !e.message ) e= { message: e }
+  
+  let file= e.fileName || e.filename || Components.stack.caller.filename
+  let line= e.lineNumber || Components.stack.caller.lineNumber
+  let source= e.sourceLine || Components.stack.caller.sourceLine
+  let stack= e.stack
+  
+  if( stack ){
+    stack= stack.replace( /^.*?\n/, '' )
   } else {
-    let ee= $fenix.create.error( String( e ), null, null, null, null, $.iface.nsIScriptError.exceptionFlag, 'component javascript' )
-    $fenix.service.console.logMessage( ee )
+    stack= []
+    let frame= Components.stack
+    while( frame= frame.caller ){
+      stack.push( frame ) 
+    }
+    stack= stack.join( '\n' )
   }
+  
+  let message= String( e.message ) + '\n' + stack
+
+  let error= $fenix.create.error( message, file, source, line, null, $.iface.nsIScriptError.exceptionFlag, 'component javascript' )
+  $fenix.service.console.logMessage( error )
+
 }

@@ -115,32 +115,25 @@ const File = $fenix.Factory( new function() {
     this.text=
     $fenix.Poly
     (   $fenix.Thread( function( ){
-            let self= this
-            return $fenix.Fiber( function( done, fail ){
-                
-                let callback= function( input, status ){
-                    try {
-                        if( !Components.isSuccessCode( status ) ){
-                            throw new Error( 'Read from [' + this.path + '] was ended with status [' + status + ']' )
-                        } else {
-                            let size= input.available()
-                            let convStream= $fenix.create.converterInput( input, null, size, null )
-                            try {
-                                let data= {}
-                                convStream.readString( size, data )
-                                done( data.value )
-                            } finally {
-                                convStream.close();
-                            } 
-                        }
-                    } catch( exception ){
-                        fail( exception )
-                    }
-                }
-                
-                $.gre.NetUtil.asyncFetch( self.nsIChannel(), callback );
-                
-            })
+
+            var result= $fenix.Trigger()
+            $.gre.NetUtil.asyncFetch( this.nsIChannel(), result.done )
+            let [ input, status ]= yield result
+
+            if( !Components.isSuccessCode( status ) ){
+                throw new Error( 'Read from [' + this.path + '] was ended with status [' + status + ']' )
+            } 
+
+            let size= input.available()
+            let convStream= $fenix.create.converterInput( input, null, size, null )
+            try {
+                let data= {}
+                convStream.readString( size, data )
+                yield $fenix.FiberValue( data.value )
+            } finally {
+                convStream.close();
+            } 
+        
         } )
     ,   function( value ){
             let self= this
