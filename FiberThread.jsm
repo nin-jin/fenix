@@ -2,7 +2,7 @@
 Components.utils.import( 'resource://fenix/this.jsm' )
 const $fenix= $.Autoload( this )
 
-function Thread( start ){
+function FiberThread( start ){
     return function( ){
         let self= this
         let arg= arguments

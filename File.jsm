@@ -114,9 +114,9 @@ const File = $fenix.Factory( new function() {
 
     this.text=
     $fenix.Poly
-    (   $fenix.Thread( function( ){
+    (   $fenix.FiberThread( function( ){
 
-            var result= $fenix.Trigger()
+            var result= $fenix.FiberTrigger()
             $.gre.NetUtil.asyncFetch( this.nsIChannel(), result.done )
             let [ input, status ]= yield result
 
@@ -135,7 +135,7 @@ const File = $fenix.Factory( new function() {
             } 
         
         } )
-    ,   $fenix.Thread( function( value ){
+    ,   $fenix.FiberThread( function( value ){
 
             let output = $.gre.FileUtils.openSafeFileOutputStream( self.nsIFile() )
             
@@ -143,7 +143,7 @@ const File = $fenix.Factory( new function() {
             converter.charset= 'UTF-8'
             let input= converter.convertToInputStream( value )
 
-            var result= $fenix.Trigger()
+            var result= $fenix.FiberTrigger()
             $.gre.NetUtil.asyncCopy( input, output, result.done )
             let [ status ]= yield result
 
@@ -156,7 +156,7 @@ const File = $fenix.Factory( new function() {
     
     this.json=
     $fenix.Poly
-    (   $fenix.Thread( function( ){
+    (   $fenix.FiberThread( function( ){
             let text= yield this.text()
             let xml= JSON.parse( text )
             yield $fenix.FiberValue( xml )
@@ -179,7 +179,7 @@ const File = $fenix.Factory( new function() {
 
     this.xml=
     $fenix.Poly
-    (   $fenix.Thread( function( ){
+    (   $fenix.FiberThread( function( ){
             let dom= yield this.dom()
             yield $fenix.FiberValue( dom.toXML() )
         } )

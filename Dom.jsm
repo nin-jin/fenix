@@ -25,11 +25,11 @@ const Dom= $fenix.Factory( new function() {
 })
 
 Dom.fromChannel=
-$fenix.Thread( function( channel, principal ){
+$fenix.FiberThread( function( channel, principal ){
     
     if( arguments.length < 2 ) principal= $fenix.create.systemPrincipal()
     
-    var result= $fenix.Trigger()
+    var result= $fenix.FiberTrigger()
     $.gre.NetUtil.asyncFetch( channel, result.done )
     let [ input, status ]= yield result
 

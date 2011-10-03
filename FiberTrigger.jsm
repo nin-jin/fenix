@@ -2,36 +2,36 @@
 Components.utils.import( 'resource://fenix/this.jsm' )
 const $fenix= $.Autoload( this )
 
-function Trigger( ){
+function FiberTrigger( ){
     let doneTrigger
     let failTrigger
     
-    let trigger=
+    let FiberTrigger=
     function( done, fail ){
         doneTrigger= done
         failTrigger= fail
     }
 
-    trigger.done=
+    FiberTrigger.done=
     function( ){
-        trigger.activate()
+        FiberTrigger.activate()
         doneTrigger( arguments )
     }
 
-    trigger.fail=
+    FiberTrigger.fail=
     function( ){
-        trigger.activate()
+        FiberTrigger.activate()
         failTrigger( arguments )
     }
     
-    trigger.activate=
+    FiberTrigger.activate=
     function( ){
-        trigger.activate=
+        FiberTrigger.activate=
         function( ){
-            throw new Error( 'Trigger was already activated' )
+            throw new Error( 'FiberTrigger was already activated' )
         }
     }
     
-    return trigger
+    return FiberTrigger
 }
 

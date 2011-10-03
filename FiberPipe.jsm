@@ -4,7 +4,7 @@ const $fenix= $.Autoload( this )
 
 function FiberPipe( ){
     let fiberList= arguments
-    return $fenix.Thread( function( ){
+    return $fenix.FiberThread( function( ){
         for( var i= 0; i < fiberList.length; ++i ){
             yield fiberList[ i ]
         }
