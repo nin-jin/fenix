@@ -108,34 +108,16 @@ const File = $fenix.Factory( new function() {
         return $fenix.Uri( $fenix.service.io.newFileURI( this.nsIFile() ) )
     }
 
-    this.nsIChannel=
+    this.channel=
     function( ){
-        return this.uri().nsIChannel()
+        return this.uri().channel()
     }
 
     this.text=
     $fenix.Poly
-    (   $fenix.FiberThread( function( ){
-
-            var result= $fenix.FiberTrigger()
-            $.gre.NetUtil.asyncFetch( this.nsIChannel(), result.done )
-            let [ input, status ]= yield result
-
-            if( !Components.isSuccessCode( status ) ){
-                throw new Error( 'Read from [' + this.path + '] was ended with status [' + status + ']' )
-            } 
-
-            let size= input.available()
-            let convStream= $fenix.create.converterInput( input, null, size, null )
-            try {
-                let data= {}
-                convStream.readString( size, data )
-                yield $fenix.FiberValue( data.value )
-            } finally {
-                convStream.close();
-            } 
-        
-        } )
+    (   function( ){
+            return this.channel().text()
+        }
     ,   $fenix.FiberThread( function( value ){
 
             let output = $.gre.FileUtils.openSafeFileOutputStream( self.nsIFile() )
@@ -157,11 +139,9 @@ const File = $fenix.Factory( new function() {
     
     this.json=
     $fenix.Poly
-    (   $fenix.FiberThread( function( ){
-            let text= yield this.text()
-            let xml= JSON.parse( text )
-            yield $fenix.FiberValue( xml )
-        } )
+    (   function( ){
+            return this.channel().json()
+        }
     ,   function( value ){
             let text= JSON.stringify( value )
             return this.text( text )
@@ -171,7 +151,7 @@ const File = $fenix.Factory( new function() {
     this.dom=
     $fenix.Poly
     (   function( ){
-            return $fenix.Dom.fromChannel( this.nsIChannel() )
+            return this.channel().dom()
         }
     ,   function( value ){
             return this.text( $fenix.Dom( value ).toXMLString() )
@@ -180,10 +160,9 @@ const File = $fenix.Factory( new function() {
 
     this.xml=
     $fenix.Poly
-    (   $fenix.FiberThread( function( ){
-            let dom= yield this.dom()
-            yield $fenix.FiberValue( dom.toXML() )
-        } )
+    (   function( ){
+            return this.channel().xml()
+        }
     ,   function( value ){
             return this.text( value.toXMLString() )
         }

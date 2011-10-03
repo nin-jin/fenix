@@ -14,9 +14,9 @@ const Uri= $fenix.Factory( new function() {
         return this
     }
     
-    this.nsIChannel=
+    this.channel=
     function( ){
-        return $fenix.service.io.newChannelFromURI( this.nsIURI() )
+        return $fenix.Channel( $fenix.service.io.newChannelFromURI( this.nsIURI() ) )
     }
     
     this.file=
