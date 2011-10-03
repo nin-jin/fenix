@@ -4,11 +4,11 @@ const $fenix= $.Autoload( this )
 
 function FiberMapper( Fiber ){
     return function fiber_mapper( arg ){
-        let racers= []
+        let fibers= []
         for( let key in arg ){
             if( !arg.hasOwnProperty( key ) ) continue
-            racers[ key ]= Fiber.apply( this, arg[ key ] )
+            fibers[ key ]= Fiber.apply( this, arg[ key ] )
         }
-        return $fenix.FiberRace( racers )
+        return $fenix.Sync( fibers )
     }
 }
