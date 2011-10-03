@@ -4,7 +4,8 @@ const $fenix= $.Autoload( this )
 
 const Dom= $fenix.Factory( new function() {
     
-    this.init= function( dom ){
+    this.init=
+    function( dom ){
         if( dom instanceof Dom ) file= file.nsIDOMNode()
         
         this.nsIDOMNode= function() dom

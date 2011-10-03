@@ -4,7 +4,8 @@ const $fenix= $.Autoload( this )
 
 const Uri= $fenix.Factory( new function() {
     
-    this.init= function( uri ){
+    this.init=
+    function( uri ){
         if( typeof uri === 'string' ) uri= $fenix.service.io.newURI( uri, null, null )
         if( uri instanceof Uri ) uri= uri.nsIURI()
         

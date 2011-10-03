@@ -4,7 +4,8 @@ const $fenix= $.Autoload( this )
 
 const File = $fenix.Factory( new function() {
     
-    this.init = function( file ){
+    this.init=
+    function( file ){
         if( typeof file === 'string' ) file= $fenix.create.fileLocal( file )
         if( file instanceof File ) file= file.nsIFile()
         
