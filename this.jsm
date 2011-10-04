@@ -3,7 +3,7 @@
 const EXPORTED_SYMBOLS= [ 'EXPORTED_SYMBOLS', '$' ]
 
 
-const $= {}
+const $= this.Proxy ? AutoloadFF4 : AutoloadFF3
 
 $.klass= Components.classes
 $.iface= Components.interfaces
@@ -13,11 +13,9 @@ $.Maker= Components.Constructor
 $.util.import( 'resource://gre/modules/XPCOMUtils.jsm' )
 const $io= $.klass[ "@mozilla.org/network/io-service;1" ].getService( $.iface.nsIIOService )
 
-$.Autoload= this.Proxy ? AutoloadFF4 : AutoloadFF3
-
 const cache= {}
 
-$.gre= $.Autoload( 'resource://gre/modules/' )
+$.gre= $( 'resource://gre/modules/' )
 
 function AutoloadFF4( baseURI ){
     if( typeof baseURI === 'string' ){
@@ -35,7 +33,7 @@ function AutoloadFF4( baseURI ){
     new function( ){
         this.$follow=
         function( relativePath ){
-            return $.Autoload( baseURI.resolve( relativePath + '/' ) )
+            return $( baseURI.resolve( relativePath + '/' ) )
         }
     }
     
@@ -89,7 +87,7 @@ function AutoloadFF3( context ){
                 if( name === '..' ) newDir= newDir.parent
                 else newDir.append( name )
             }
-            return $.Autoload( newDir )
+            return $( newDir )
         }
         
     }

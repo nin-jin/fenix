@@ -1,6 +1,6 @@
 "use strict"
 Components.utils.import( 'resource://fenix/this.jsm' )
-const $fenix= $.Autoload( this )
+const $fenix= $( this )
 
 const Fiber= function( fiber ){
     return function( done, fail ){

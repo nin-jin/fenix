@@ -2,10 +2,10 @@
 # put this code into chrome.manifest with right path to fenix package
 # for using fenix modules in your jsm use:
 #   Components.utils.import( 'resource://fenix/this.jsm' )
-#   const $my= $.Autoload( this )
+#   const $my= $( this )
 #   const $fenix= $my.$follow( 'relative/path/to/fenix/package/' )
 # or use that in any context:
 #   const $= Components.utils.import( 'resource://fenix/this.jsm', {} ).$
-#   const $fenix= $.Autoload( 'resource://path/to/your/extension/modules/fenix/' )
+#   const $fenix= $( 'resource://path/to/your/extension/modules/fenix/' )
 
 resource fenix ./ 

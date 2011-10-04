@@ -1,6 +1,6 @@
 "use strict"
 Components.utils.import( 'resource://fenix/this.jsm' )
-const $fenix= $.Autoload( this )
+const $fenix= $( this )
 
 function FiberSync( map ){
     return $fenix.Fiber( function( done, fail ){

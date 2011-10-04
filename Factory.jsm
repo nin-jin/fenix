@@ -1,6 +1,6 @@
 "use strict"
 Components.utils.import( 'resource://fenix/this.jsm' )
-const $fenix= $.Autoload( this )
+const $fenix= $( this )
 
 function autobind( proto, key, func ){
     proto.__defineGetter__( key, function lazy( ){
