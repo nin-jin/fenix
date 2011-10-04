@@ -6,7 +6,7 @@ const Dom= $fenix.Factory( new function() {
     
     this.init=
     function( dom ){
-        if( dom instanceof Dom ) file= file.nsIDOMNode()
+        if( dom instanceof Dom ) dom= dom.nsIDOMNode()
         
         this.nsIDOMNode= function() dom
         
