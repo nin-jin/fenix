@@ -6,11 +6,20 @@ function autobind( proto, key, func ){
     proto.__defineGetter__( key, function lazy( ){
         if( this.hasOwnProperty( key ) ) return func
         let self= this
-        delete proto[ key ]
-        this[ key ]= function( ){
+        
+        let wrapper=
+        function wrapper( ){
             return func.apply( self, arguments )
         }
+        wrapper.toString=
+        function wrapper_toString( ){
+            return String( func )
+        }
+        
+        delete proto[ key ]
+        this[ key ]= wrapper
         proto.__defineGetter__( key, lazy )
+
         return this[ key ]
     } )
 }
