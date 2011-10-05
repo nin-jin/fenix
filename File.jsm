@@ -5,7 +5,7 @@ const $fenix= $( this )
 const File = $fenix.Factory( new function() {
     
     this.init=
-    function( file ){
+    function init( file ){
         if( typeof file === 'string' ) file= $fenix.create.fileLocal( file )
         if( file instanceof File ) file= file.nsIFile()
         
@@ -15,12 +15,12 @@ const File = $fenix.Factory( new function() {
     }
     
     this.path=
-    function( ){
+    function path( ){
         return this.nsIFile().path
     }
 
     this.follow=
-    function( relativePath ){
+    function follow( relativePath ){
         let file = this.nsIFile().clone()
 
         let nameList = relativePath.split( '/' )
@@ -36,10 +36,10 @@ const File = $fenix.Factory( new function() {
     
     this.exists=
     $fenix.Poly
-    (   function( ){
+    (   function exists_get( ){
             return this.nsIFile().exists() ? this : null
         }
-    ,   function( value ){
+    ,   function exists_put( value ){
             if( this.exists() === value ) return this
     
             if( value ){
@@ -53,21 +53,21 @@ const File = $fenix.Factory( new function() {
     )
     
     this.readable=
-    function( ){
+    function readable( ){
         return this.exists() && this.nsIFile().isReadable() ? this : null
     }
     
     this.writable=
-    function( ){
+    function eritable( ){
         return this.nsIFile().isWritable() ? this : null
     }
     
     this.file=
     $fenix.Poly
-    (   function( ){
+    (   function file_get( ){
             return this.nsIFile().isFile() ? this : null
         }
-    ,   function( value ){
+    ,   function file_put( value ){
             if( !value ) throw new Error( 'Wrong value [' + value + ']' )
             if( this.file() ) return this
     
@@ -80,10 +80,10 @@ const File = $fenix.Factory( new function() {
     
     this.dir=
     $fenix.Poly
-    (   function( ){
+    (   function dir_get( ){
             return this.nsIFile().isDirectory() ? this : null
         }
-    ,   function( value ){
+    ,   function dir_put( value ){
             if( !value ) throw new Error( 'Wrong value [' + value + ']' )
             if( this.dir() ) return this
     
@@ -94,7 +94,7 @@ const File = $fenix.Factory( new function() {
     )
     
     this.mimeType=
-    function( ){
+    function mimeType( ){
         try {
             return $fenix.service.mime.getTypeFromFile( this.nsIFile() )
         } catch( exception ){
@@ -104,21 +104,21 @@ const File = $fenix.Factory( new function() {
     }
     
     this.uri=
-    function( ){
+    function uri( ){
         return $fenix.Uri( $fenix.service.io.newFileURI( this.nsIFile() ) )
     }
 
     this.channel=
-    function( ){
+    function channel( ){
         return this.uri().channel()
     }
 
     this.text=
     $fenix.Poly
-    (   function( ){
+    (   function text_get( ){
             return this.channel().text()
         }
-    ,   $fenix.FiberThread( function( value ){
+    ,   $fenix.FiberThread( function text_put( value ){
 
             let output = $.gre.FileUtils.openSafeFileOutputStream( self.nsIFile() )
             
@@ -139,10 +139,10 @@ const File = $fenix.Factory( new function() {
     
     this.json=
     $fenix.Poly
-    (   function( ){
+    (   function json_get( ){
             return this.channel().json()
         }
-    ,   function( value ){
+    ,   function json_put( value ){
             let text= JSON.stringify( value )
             return this.text( text )
         }
@@ -150,20 +150,20 @@ const File = $fenix.Factory( new function() {
     
     this.dom=
     $fenix.Poly
-    (   function( ){
+    (   function dom_get( ){
             return this.channel().dom()
         }
-    ,   function( value ){
+    ,   function dom_put( value ){
             return this.text( $fenix.Dom( value ).toXMLString() )
         }
     )
 
     this.xml=
     $fenix.Poly
-    (   function( ){
+    (   function xml_get( ){
             return this.channel().xml()
         }
-    ,   function( value ){
+    ,   function xml_put( value ){
             return this.text( value.toXMLString() )
         }
     )

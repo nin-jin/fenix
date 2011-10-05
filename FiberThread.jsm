@@ -3,10 +3,10 @@ Components.utils.import( 'resource://fenix/this.jsm' )
 const $fenix= $( this )
 
 function FiberThread( start ){
-    return function( ){
+    return function wrapper( ){
         let self= this
         let arg= arguments
-        return $fenix.Fiber( function( done, fail ){
+        return $fenix.Fiber( function fiber( done, fail ){
     
             var context = start.apply( self, arg )
             if( {}.toString.apply( context ) !== '[object Generator]' ) return done( context )

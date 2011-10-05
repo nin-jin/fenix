@@ -3,7 +3,7 @@ Components.utils.import( 'resource://fenix/this.jsm' )
 const $fenix= $( this )
 
 function FiberMapper( Fiber ){
-    return function fiber_mapper( arg ){
+    return function mapper( arg ){
         let fibers= []
         for( let key in arg ){
             if( !arg.hasOwnProperty( key ) ) continue

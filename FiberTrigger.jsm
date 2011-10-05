@@ -7,25 +7,25 @@ function FiberTrigger( ){
     let failTrigger
     
     let FiberTrigger=
-    function( done, fail ){
+    function trigger( done, fail ){
         doneTrigger= done
         failTrigger= fail
     }
 
     FiberTrigger.done=
-    function( ){
+    function done( ){
         FiberTrigger.activate()
         doneTrigger( arguments )
     }
 
     FiberTrigger.fail=
-    function( ){
+    function fail( ){
         FiberTrigger.activate()
         failTrigger( arguments )
     }
     
     FiberTrigger.activate=
-    function( ){
+    function activate( ){
         FiberTrigger.activate=
         function( ){
             throw new Error( 'FiberTrigger was already activated' )

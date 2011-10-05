@@ -5,7 +5,7 @@ const $fenix= $( this )
 const Uri= $fenix.Factory( new function() {
     
     this.init=
-    function( uri ){
+    function init( uri ){
         if( typeof uri === 'string' ) uri= $fenix.service.io.newURI( uri, null, null )
         if( uri instanceof Uri ) uri= uri.nsIURI()
         
@@ -15,17 +15,17 @@ const Uri= $fenix.Factory( new function() {
     }
     
     this.channel=
-    function( ){
+    function channel( ){
         return $fenix.Channel( $fenix.service.io.newChannelFromURI( this.nsIURI() ) )
     }
     
     this.file=
-    function( ){
+    function file( ){
         return $fenix.File( this.nsIURI().QueryInterface( $.iface.nsIFileURL ).file )
     }
 
     this.toString=
-    function( ){
+    function toString( ){
         return this.nsIURI().spec
     }
     

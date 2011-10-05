@@ -1,9 +1,9 @@
 "use strict"
 Components.utils.import( 'resource://fenix/this.jsm' )
 
-const Poly= function( ){
+function Poly( ){
     var map= arguments
-    return function(){
+    return function wrapper(){
         return map[ arguments.length ].apply( this, arguments )
     }
 }

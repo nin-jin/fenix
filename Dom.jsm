@@ -5,7 +5,7 @@ const $fenix= $( this )
 const Dom= $fenix.Factory( new function() {
     
     this.init=
-    function( dom ){
+    function init( dom ){
         if( dom instanceof Dom ) dom= dom.nsIDOMNode()
         
         this.nsIDOMNode= function() dom
@@ -14,12 +14,12 @@ const Dom= $fenix.Factory( new function() {
     }
     
     this.toXMLString=
-    function( ){
+    function toXMLString( ){
         return $fenix.service.domSerializer.serializeToString( this.nsIDOMNode() )
     }
     
     this.toXML=
-    function( ){
+    function toXML( ){
         return new XML( this.toXMLString() )
     }
 

@@ -3,7 +3,7 @@ Components.utils.import( 'resource://fenix/this.jsm' )
 const $fenix= $( this )
 
 function FiberSync( map ){
-    return $fenix.Fiber( function( done, fail ){
+    return $fenix.Fiber( function fiber( done, fail ){
         var result= []
         var ballance= 1
         

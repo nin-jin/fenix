@@ -5,7 +5,7 @@ const $fenix= $( this )
 const Channel= $fenix.Factory( new function() {
     
     this.init=
-    function( channel ){
+    function init( channel ){
         if( channel instanceof Channel ) channel= Channel.nsIChannel()
         
         this.nsIChannel= function() channel
@@ -14,18 +14,18 @@ const Channel= $fenix.Factory( new function() {
     }
     
     this.uriTarget=
-    function( ){
+    function uriTarget( ){
         return $fenix.Uri( this.nsIChannel().URI )
     }
     
     this.uriSource=
-    function( ){
+    function uriSource( ){
         return $fenix.Uri( this.nsIChannel().originalURI )
     }
     
     this.text=
     $fenix.Poly
-    (   $fenix.FiberThread( function( ){
+    (   $fenix.FiberThread( function text_get( ){
 
             var result= $fenix.FiberTrigger()
             $.gre.NetUtil.asyncFetch( this.nsIChannel(), result.done )
@@ -50,7 +50,7 @@ const Channel= $fenix.Factory( new function() {
 
     this.json=
     $fenix.Poly
-    (   $fenix.FiberThread( function( ){
+    (   $fenix.FiberThread( function json_get( ){
             let text= yield this.text()
             let xml= JSON.parse( text )
             yield $fenix.FiberValue( xml )
@@ -59,7 +59,7 @@ const Channel= $fenix.Factory( new function() {
     
     this.dom=
     $fenix.Poly
-    (   $fenix.FiberThread( function( ){
+    (   $fenix.FiberThread( function dom_get( ){
             
             //if( arguments.length < 2 )
             principal= $fenix.create.systemPrincipal()
@@ -91,14 +91,14 @@ const Channel= $fenix.Factory( new function() {
 
     this.xml=
     $fenix.Poly
-    (   $fenix.FiberThread( function( ){
+    (   $fenix.FiberThread( function xml_get( ){
             let dom= yield this.dom()
             yield $fenix.FiberValue( dom.toXML() )
         } )
     )
 
     this.toString=
-    function( ){
+    function toString( ){
         let source= String( this.uriSource() )
         let target= String( this.uriTarget() )
         
