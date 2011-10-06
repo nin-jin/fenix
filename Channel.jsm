@@ -1,6 +1,6 @@
 "use strict"
 Components.utils.import( 'resource://fenix/this.jsm' )
-const $fenix= $( this )
+const $fenix= $()
 
 const Channel= $fenix.Factory( new function() {
     

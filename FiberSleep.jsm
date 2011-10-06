@@ -1,6 +1,6 @@
 "use strict"
 Components.utils.import( 'resource://fenix/this.jsm' )
-const $fenix= $( this )
+const $fenix= $()
 
 function FiberSleep( delay ){
     return $fenix.Fiber( function fiber( done, fail ){
