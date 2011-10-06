@@ -5,7 +5,9 @@ const create= new function(){
 
     this.converterInput= $.Maker( '@mozilla.org/intl/converter-input-stream;1', 'nsIConverterInputStream', 'init' )
     this.converterUnicode= $.Maker( '@mozilla.org/intl/scriptableunicodeconverter', 'nsIScriptableUnicodeConverter' )
+    this.domDoc= $.Maker( '@mozilla.org/xml/xml-document;1', 'nsIDOMDocument' )
     this.domParser= $.Maker( '@mozilla.org/xmlextras/domparser;1', 'nsIDOMParser', 'init' )
+    this.domTransformer= $.Maker( '@mozilla.org/document-transformer;1?type=xslt', 'nsIXSLTProcessor', 'importStylesheet' )
     this.error= $.Maker( '@mozilla.org/scripterror;1', 'nsIScriptError', 'init' )
     this.fileLocal= $.Maker( '@mozilla.org/file/local;1', 'nsILocalFile', 'initWithPath' )
     this.systemPrincipal= $.Maker( '@mozilla.org/systemprincipal;1', 'nsIPrincipal' )
