@@ -18,12 +18,9 @@ const cache= {}
 $.gre= $( 'resource://gre/modules/' )
 
 function AutoloadFF4( baseURI ){
+    if( !baseURI ) baseURI= './'
     if( typeof baseURI === 'string' ){
-        baseURI= $io.newURI( baseURI, null, null )
-    } else if( baseURI.__URI__ ){
-        baseURI= $io.newURI( baseURI.__URI__, null, null )
-    } else if( baseURI.__LOCATION__ ){
-        baseURI= $io.newFileURI( baseURI.__LOCATION__.parent )
+        baseURI= $io.newURI( baseURI, null, $io.newURI( Components.stack.caller.filename, null, null ) )
     }
     
     let instance= cache[ baseURI.spec ]
@@ -31,10 +28,13 @@ function AutoloadFF4( baseURI ){
     
     let proto=
     new function( ){
+
+        this.$uri=
+        function() baseURI
+        
         this.$follow=
-        function( relativePath ){
-            return $( baseURI.resolve( relativePath + '/' ) )
-        }
+        function( relativePath ) $( $io.newURI( relativePath, null, baseURI ) )
+
     }
     
     return cache[ baseURI.spec ]=
@@ -50,17 +50,18 @@ function AutoloadFF4( baseURI ){
     })
 }
 
-function AutoloadFF3( context ){
-    let aDir= context.__LOCATION__ || context
-    if( typeof aDir === 'string' ){
-        aDir= $io.newURI( aDir, null, null ).QueryInterface( $.iface.nsIFileURL ).file
+function AutoloadFF3( baseURI ){
+    if( !baseURI ) baseURI= './'
+    if( typeof baseURI === 'string' ){
+        baseURI= $io.newURI( baseURI, null, $io.newURI( Components.stack.caller.filename, null, null ) )
     }
-    if( !aDir.isDirectory() ) aDir= aDir.parent
     
-    let instance= cache[ aDir.path ]
+    let instance= cache[ baseURI.spec ]
     if( instance ) return instance
     
-    return cache[ aDir.path ]= new function( ){
+    return cache[ baseURI.spec ]= new function( ){
+
+        let aDir= baseURI.QueryInterface( $.iface.nsIFileURL ).file
 
         let i = aDir.directoryEntries
         while( i.hasMoreElements() ){
@@ -77,18 +78,11 @@ function AutoloadFF3( context ){
 
         }
         
+        this.$uri=
+        function() baseURI
+        
         this.$follow=
-        function( relativePath ){
-            let names= relativePath.split( '/' )
-            let newDir= aDir.clone()
-            while( names.length ){
-                let name= names.shift()
-                if( !name ) continue
-                if( name === '..' ) newDir= newDir.parent
-                else newDir.append( name )
-            }
-            return $( newDir )
-        }
+        function( relativePath ) $( $io.newURI( relativePath, null, baseURI ) )
         
     }
 }
