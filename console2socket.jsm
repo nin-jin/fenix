@@ -52,9 +52,9 @@ const console2socket= $fenix.FiberThread( function( host, port ){
         let logger= 'Firefox.' + file.split( $fenix.dir.profile.uri() + '' ).join( '' ).replace( /\.\w+/g, '' ).replace( /[\/\\]+/g, '.' )
 
         let messageXML= <>
-            <log4j:event xmlns:log4j='' logger={logger} level={level} thread='unknown' timestamp={time}>
+            <log4j:event xmlns:log4j='' logger={logger} level={level} thread='' timestamp={time}>
                 <log4j:message>{descr}</log4j:message> 
-                <log4j:locationInfo class='Abc' method='foo' file={file} line={line}/>
+                <log4j:locationInfo class='' method='' file={file} line={line}/>
             </log4j:event>
         </>.toXMLString()
         
