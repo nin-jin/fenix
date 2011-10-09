@@ -37,7 +37,7 @@ const console2socket= $fenix.FiberThread( function( host, port ){
 
         let descr= message.errorMessage || message.message
         
-        let matches= /^\[JavaScript (Error|Warning): "([\s\S]*)" \{file: "(.*)" line: (\d+)(?: column: (\d+))(?: source: "(.*)")\}\]$/.exec( descr )
+        let matches= /^\[JavaScript (Error|Warning): "([\s\S]*)" \{file: "(.*)" line: (\d+)(?: column: (\d+))?(?: source: "(.*)")?\}\]$/.exec( descr )
         if( matches ) try {
             file= file || matches[3]
             line= line || matches[4]
