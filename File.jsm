@@ -18,6 +18,11 @@ const File = $fenix.Factory( new function() {
     function path( ){
         return this.nsIFile().path
     }
+    
+    this.toString=
+    function toString( ){
+        return this.path()
+    }
 
     this.follow=
     function follow( relativePath ){
