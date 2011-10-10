@@ -11,10 +11,13 @@ function autobind( proto, key, func ){
         function wrapper( ){
             return func.apply( self, arguments )
         }
+        
         wrapper.toString=
         function wrapper_toString( ){
             return String( func )
         }
+        
+        wrapper.observe= wrapper
         
         delete proto[ key ]
         this[ key ]= wrapper
