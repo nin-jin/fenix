@@ -18,6 +18,8 @@ function autobind( proto, key, func ){
         }
         
         wrapper.observe= wrapper
+        wrapper.handleEvent= wrapper
+        wrapper.notify= wrapper
         
         delete proto[ key ]
         this[ key ]= wrapper

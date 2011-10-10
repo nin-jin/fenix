@@ -24,78 +24,70 @@ const Channel= $fenix.Factory( new function() {
     }
     
     this.text=
-    $fenix.Poly
-    (   $fenix.FiberThread( function text_get( ){
+    $fenix.FiberThread( function text_get( ){
 
-            var result= $fenix.FiberTrigger()
-            $.gre.NetUtil.asyncFetch( this.nsIChannel(), result.done )
-            let [ input, status ]= yield result
+        var result= $fenix.FiberTrigger()
+        $.gre.NetUtil.asyncFetch( this.nsIChannel(), result.done )
+        let [ input, status ]= yield result
 
-            if( !Components.isSuccessCode( status ) ){
-                throw new Error( 'Read from [' + this.uriSource() + '] was ended with status [' + status + ']' )
-            } 
+        if( !Components.isSuccessCode( status ) ){
+            throw new Error( 'Read from [' + this.uriSource() + '] was ended with status [' + status + ']' )
+        } 
 
-            let size= input.available()
-            let convStream= $fenix.create.converterInput( input, null, size, null )
-            try {
-                let data= {}
-                convStream.readString( size, data )
-                yield $fenix.FiberValue( data.value )
-            } finally {
-                convStream.close();
-            } 
-        
-        } )
-    )
+        let size= input.available()
+        let convStream= $fenix.create.converterInput( input, null, size, null )
+        try {
+            let data= {}
+            convStream.readString( size, data )
+            yield $fenix.FiberValue( data.value )
+        } finally {
+            convStream.close();
+        } 
+    
+    } )
 
     this.json=
-    $fenix.Poly
-    (   $fenix.FiberThread( function json_get( ){
-            let text= yield this.text()
-            let xml= JSON.parse( text )
-            yield $fenix.FiberValue( xml )
-        } )
-    )
+    $fenix.FiberThread( function json_get( ){
+        let text= yield this.text()
+        let xml= JSON.parse( text )
+        yield $fenix.FiberValue( xml )
+    } )
     
     this.dom=
-    $fenix.Poly
-    (   $fenix.FiberThread( function dom_get( ){
+    $fenix.FiberThread( function dom_get( ){
             
-            //if( arguments.length < 2 )
-            principal= $fenix.create.systemPrincipal()
+        //if( arguments.length < 2 )
+        principal= $fenix.create.systemPrincipal()
+        
+        var result= $fenix.FiberTrigger()
+        $.gre.NetUtil.asyncFetch( this.nsIChannel(), result.done )
+        let [ input, status ]= yield result
+    
+        if( !Components.isSuccessCode( status ) ){
+            throw new Error( 'Read from [' + this.uriSource() + '] was ended with status [' + status + ']' )
+        } 
+    
+        try {
+            let domParser= $fenix.create.domParser( principal, this.uriSource().nsIURI(), null )
+            let doc= domParser.parseFromStream( input, null, input.available(), 'text/xml' )
+            let dom= doc.documentElement
             
-            var result= $fenix.FiberTrigger()
-            $.gre.NetUtil.asyncFetch( this.nsIChannel(), result.done )
-            let [ input, status ]= yield result
-        
-            if( !Components.isSuccessCode( status ) ){
-                throw new Error( 'Read from [' + this.uriSource() + '] was ended with status [' + status + ']' )
-            } 
-        
-            try {
-                let domParser= $fenix.create.domParser( principal, this.uriSource().nsIURI(), null )
-                let doc= domParser.parseFromStream( input, null, input.available(), 'text/xml' )
-                let dom= doc.documentElement
-                
-                if( dom.namespaceURI === 'http://www.mozilla.org/newlayout/xml/parsererror.xml' ){
-                    throw new Error( dom.textContent )
-                }
-                
-                yield $fenix.FiberValue( $fenix.Dom( dom ) )
-            } finally {
-                input.close();
+            if( dom.namespaceURI === 'http://www.mozilla.org/newlayout/xml/parsererror.xml' ){
+                throw new Error( dom.textContent )
             }
-        
-        } )
-    )
+            
+            yield $fenix.FiberValue( $fenix.Dom( dom ) )
+        } finally {
+            input.close();
+        }
+    
+    } )
 
     this.xml=
-    $fenix.Poly
-    (   $fenix.FiberThread( function xml_get( ){
-            let dom= yield this.dom()
-            yield $fenix.FiberValue( dom.toXML() )
-        } )
-    )
+    $fenix.FiberThread( function xml_get( ){
+        let dom= yield this.dom()
+        yield $fenix.FiberValue( dom.toXML() )
+    } )
 
     this.toString=
     function toString( ){
