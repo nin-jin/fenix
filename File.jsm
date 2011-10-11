@@ -25,18 +25,8 @@ const File = $fenix.Factory( new function() {
     }
 
     this.follow=
-    function follow( relativePath ){
-        let file = this.nsIFile().clone()
-
-        let nameList = relativePath.split( '/' )
-        for each( let name in nameList ){
-            if (!name) continue
-            if (name === ".") continue
-            if (name === "..") file= file.parent
-            else file.append( name )
-        }
-
-        return File( file )
+    function follow( relative ){
+        return this.uri().follow( relative ).file()
     }
     
     this.exists=
@@ -117,15 +107,28 @@ const File = $fenix.Factory( new function() {
     function channel( ){
         return this.uri().channel()
     }
+    
+    this.execute=
+    $fenix.FiberThread( function( ){
+        let process= $fenix.create.process( this.nsIFile() )
+        let trigger= $fenix.FiberTrigger()
+        process.runAsync( arguments, arguments.length, { observe: trigger.done } )
+        let[ subject, topic, data ]= yield trigger
+
+        if( topic === 'process-failed' ) throw new Error( 'Failed execution of [' + this.uri() + ']' )
+        if( process.exitValue ) throw new Error( 'Execution of [' + this.uri() + '] ends with code [' + process.exitValue + ']' )
+    } )
 
     this.text=
     $fenix.Poly
     (   function text_get( ){
+            if( !this.readable() ) throw new Error( 'Can not read [' + this.uri() + ']' )
+
             return this.channel().text()
         }
     ,   $fenix.FiberThread( function text_put( value ){
 
-            let output = $.gre.FileUtils.openSafeFileOutputStream( self.nsIFile() )
+            let output = $.gre.FileUtils.openSafeFileOutputStream( this.nsIFile() )
             
             let converter= $fenix.create.converterUnicode()
             converter.charset= 'UTF-8'

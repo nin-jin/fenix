@@ -23,6 +23,11 @@ const Uri= $fenix.Factory( new function() {
     function file( ){
         return $fenix.File( this.nsIURI().QueryInterface( $.iface.nsIFileURL ).file )
     }
+    
+    this.follow=
+    function follow( relative ){
+        return $fenix.Uri( this.nsIURI().resolve( relative ) )
+    }
 
     this.toString=
     function toString( ){

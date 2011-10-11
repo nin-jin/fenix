@@ -28,8 +28,8 @@ const Dom= $fenix.Factory( new function() {
         return $fenix.Xslt( xslt ).process( this )
     }
     
-    var xulDoc= common.api.XMLUtils.xmlDocFromString( '<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" />' )
-    
+    let xulDoc= $fenix.create.domDoc( 'http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul' )
+
     this.swapNS=
     function swapNS( sourceNS, targetNS ){
         let rootNode= this.nsIDOMNode()
@@ -63,3 +63,13 @@ const Dom= $fenix.Factory( new function() {
     }
 
 })
+
+Dom.fromXMLString=
+function fromXMLString( text ){
+    let parser= $fenix.create.domParser( null, $fenix.$uri(), null )
+    let dom= parser.parseFromString( text, 'text/xml' ).documentElement
+    if( dom.namespaceURI === 'http://www.mozilla.org/newlayout/xml/parsererror.xml' ){
+        throw new Error( dom.textContent )
+    }
+    return $fenix.Dom( dom )
+}    
