@@ -37,6 +37,12 @@ function Factory( proto ){
         autobind( proto, key, proto[ key ] )
     }
     
+    proto.nsISupports= function( ) this
+    proto.QueryInterface= function QueryInterface( iface ){
+        if( iface in this ) return this[ iface ]()
+        throw Cr.NS_ERROR_NO_INTERFACE;
+    }
+
     let Instance= function( ){ }
     Instance.prototype= proto
     
