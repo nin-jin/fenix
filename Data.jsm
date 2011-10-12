@@ -23,6 +23,11 @@ const Data= $fenix.Factory( new function Data( ){
         return null
     }
     
+    this.fenixResource=
+    function( ){
+        return this
+    }
+    
     this.toString=
     function toString( ){
         return 'Data[' + this.id() + ']'
