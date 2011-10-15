@@ -40,7 +40,7 @@ function Factory( proto ){
     proto.nsISupports= function( ) this
     proto.QueryInterface= function QueryInterface( iface ){
         if( iface in this ) return this[ iface ]()
-        throw Cr.NS_ERROR_NO_INTERFACE;
+        throw Cr.NS_ERROR_NO_INTERFACE
     }
 
     let Instance= function( ){ }

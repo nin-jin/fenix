@@ -17,39 +17,41 @@ const Svn = $fenix.Factory( new function() {
     
     this.query=
     $fenix.FiberThread( function( command ){
-        let text= yield $fenix.execute( 'svn --xml ' + command )
-        let xml= $fenix.Dom.fromXMLString( text ).toXML()
+        let query= 'svn --xml ' + command
+        let text= yield $fenix.execute( query )
+        let dom= $fenix.Dom.fromString( text, $fenix.Uri.fromString( 'system:' + query ).nsIURI() )
+        let xml= $fenix.Xml.fromString( dom )
         yield $fenix.FiberValue( xml )
     } )
 
     this.info=    
     function( ){
-        return this.query( 'info "' + this.location() + '@head"' )
+        return this.query( 'info "' + this.location() + '@"' )
     }
 
     this.list=
     function( ){
-        return this.query( 'list "' + this.location() + '@head"' )
+        return this.query( 'list "' + this.location() + '@"' )
     }
 
     this.checkOut=
     function( from ){
-        return this.query( 'checkout "' + from + '@head" "' + this.location() + '@head"' )
+        return this.query( 'checkout "' + from + '@" "' + this.location() + '@"' )
     }
 
     this.update=
     function( ){
-        return this.query( 'update "' + this.location() + '@head"' )
+        return this.query( 'update "' + this.location() + '@"' )
     }
 
     this.status=
     function( ){
-        return this.query( 'status "' + this.location() + '@head"' )
+        return this.query( 'status "' + this.location() + '@"' )
     }
 
     this.export=
     function( to ){
-        return this.query( 'export "' + this.location() + '@head" "' + to + '"' )
+        return this.query( 'export "' + this.location() + '@" "' + to + '"' )
     }
 
     this.import=

@@ -33,9 +33,9 @@ const Xslt= $fenix.Factory( new function() {
     }
     
     this.nsIXSLTProcessor=
-    $fenix.Lazy( function nsIXSLTProcessor( ){
+    function nsIXSLTProcessor( ){
         return $.create.domTransformer( this.dom().nsIDOMNode() )
-    } )
+    }
 
     this.process=
     function process( dom ){

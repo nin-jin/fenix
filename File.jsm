@@ -2,92 +2,104 @@
 Components.utils.import( 'resource://fenix/this.jsm' )
 const $fenix= $()
 
-const File = $fenix.Factory( new function() {
+const File= $fenix.Factory( new function Data( ){
+    
+    this.nsIFile= null
     
     this.init=
     function init( file ){
-        if( typeof file === 'string' ) file= $fenix.create.fileLocal( file )
-        if( file instanceof File ) file= file.nsIFile()
-        
+        if( file instanceof File ) return file
         this.nsIFile= function() file
-        
         return this
     }
     
-    this.path=
-    function path( ){
-        return this.nsIFile().path
+    this.destroy=
+    function destroy( ){
+        this.nsIFile= null
+        return this
+    }
+    
+    this.nsIURI=
+    function nsIURI( ){
+        return $fenix.service.io.newFileURI( this.nsIFile() )
+    }
+    
+    this.nsIChannel=
+    function nsIChannel( ){
+        return this.uri().nsIChannel()
+    }
+
+    this.uri=
+    function uri( ){
+        return $fenix.Uri( this.nsIURI() )
+    }
+    
+    this.fenixResource=
+    function fenixResource( ){
+        return this
     }
     
     this.toString=
     function toString( ){
-        return this.path()
-    }
-
-    this.follow=
-    function follow( relative ){
-        return this.uri().follow( relative ).file()
+        return this.nsIFile().path
     }
     
     this.exists=
-    $fenix.Poly
-    (   function exists_get( ){
-            return this.nsIFile().exists() ? this : null
-        }
-    ,   function exists_put( value ){
-            if( this.exists() === value ) return this
+    $fenix.FiberThread( function exists( ){
+        return this.nsIFile().exists() ? this : null
+    } )
     
-            if( value ){
-                this.file( true )
-            } else {
-                this.nsIFile().remove( true )
-            }
-    
-            return this
-        }
-    )
-    
-    this.readable=
-    function readable( ){
-        return this.exists() && this.nsIFile().isReadable() ? this : null
+    this.get=
+    function get( ){
+        return $fenix.Uri( this.nsIURI() ).get()
     }
     
-    this.writable=
-    function eritable( ){
-        return this.nsIFile().isWritable() ? this : null
-    }
-    
-    this.file=
-    $fenix.Poly
-    (   function file_get( ){
-            return this.nsIFile().isFile() ? this : null
-        }
-    ,   function file_put( value ){
-            if( !value ) throw new Error( 'Wrong value [' + value + ']' )
-            if( this.file() ) return this
-    
-            this.parent.dir( true )
+    this.put=
+    $fenix.FiberThread( function put( data ){
+        let exists= yield this.exists()
+        if( !exists ){
+            let dir= this.go( '.' )
+            let dirExists= yield dir.exists()
+            if( !dirExists ) dir.nsIFile().create( $.iface.nsIFile.DIRECTORY_TYPE, -1 )
             this.nsIFile().create( $.iface.nsIFile.NORMAL_FILE_TYPE, -1 )
-    
-            return this;
         }
-    )
-    
-    this.dir=
-    $fenix.Poly
-    (   function dir_get( ){
-            return this.nsIFile().isDirectory() ? this : null
+        
+        let output = $.gre.FileUtils.openSafeFileOutputStream( this.nsIFile() )
+        
+        let converter= $fenix.create.converterUnicode()
+        converter.charset= 'UTF-8'
+        let input= converter.convertToInputStream( data )
+
+        var result= $fenix.FiberTrigger()
+        $.gre.NetUtil.asyncCopy( input, output, result.done )
+        let [ status ]= yield result
+
+        if( !Components.isSuccessCode( status ) ){
+            throw new Error( 'Write to [' + this + '] was ended with status [' + status + ']' )
         }
-    ,   function dir_put( value ){
-            if( !value ) throw new Error( 'Wrong value [' + value + ']' )
-            if( this.dir() ) return this
+    } )
     
-            this.nsIFile().create( $.iface.nsIFile.DIRECTORY_TYPE, -1 )
+    this.sub=
+    $fenix.FiberThread( function sub( ){
+        return []
+    } )
     
-            return this;
-        }
-    )
+    this.go=
+    function go( uri ){
+        return this.uri().go( uri ).file()
+    }
     
+    this.execute=
+    $fenix.FiberThread( function( ){
+        let process= $fenix.create.process( this.nsIFile() )
+        let result= $fenix.FiberTrigger()
+        process.runAsync( arguments, arguments.length, result.done )
+        let[ subject, topic, data ]= yield result
+
+        if( topic === 'process-failed' ) throw new Error( 'Failed execution of [' + this + ']' )
+        if( process.exitValue ) throw new Error( 'Execution of [' + this + '] ends with code [' + process.exitValue + ']' )
+    } )
+
     this.mimeType=
     function mimeType( ){
         try {
@@ -98,82 +110,14 @@ const File = $fenix.Factory( new function() {
         }
     }
     
-    this.uri=
-    function uri( ){
-        return $fenix.Uri( $fenix.service.io.newFileURI( this.nsIFile() ) )
-    }
-
-    this.channel=
-    function channel( ){
-        return this.uri().channel()
-    }
-    
-    this.execute=
-    $fenix.FiberThread( function( ){
-        let process= $fenix.create.process( this.nsIFile() )
-        let trigger= $fenix.FiberTrigger()
-        process.runAsync( arguments, arguments.length, { observe: trigger.done } )
-        let[ subject, topic, data ]= yield trigger
-
-        if( topic === 'process-failed' ) throw new Error( 'Failed execution of [' + this.uri() + ']' )
-        if( process.exitValue ) throw new Error( 'Execution of [' + this.uri() + '] ends with code [' + process.exitValue + ']' )
+    this.drop=
+    $fenix.FiberThread( function drop( ){
+        return this.nsIFile().remove( true )
     } )
 
-    this.text=
-    $fenix.Poly
-    (   function text_get( ){
-            if( !this.readable() ) throw new Error( 'Can not read [' + this.uri() + ']' )
-
-            return this.channel().text()
-        }
-    ,   $fenix.FiberThread( function text_put( value ){
-
-            let output = $.gre.FileUtils.openSafeFileOutputStream( this.nsIFile() )
-            
-            let converter= $fenix.create.converterUnicode()
-            converter.charset= 'UTF-8'
-            let input= converter.convertToInputStream( value )
-
-            var result= $fenix.FiberTrigger()
-            $.gre.NetUtil.asyncCopy( input, output, result.done )
-            let [ status ]= yield result
-
-            if( !Components.isSuccessCode( status ) ){
-                throw new Error( 'Write to [' + this.path + '] was ended with status [' + status + ']' )
-            } 
-
-        } )
-    )
-    
-    this.json=
-    $fenix.Poly
-    (   function json_get( ){
-            return this.channel().json()
-        }
-    ,   function json_put( value ){
-            let text= JSON.stringify( value )
-            return this.text( text )
-        }
-    )
-    
-    this.dom=
-    $fenix.Poly
-    (   function dom_get( ){
-            return this.channel().dom()
-        }
-    ,   function dom_put( value ){
-            return this.text( $fenix.Dom( value ).toXMLString() )
-        }
-    )
-
-    this.xml=
-    $fenix.Poly
-    (   function xml_get( ){
-            return this.channel().xml()
-        }
-    ,   function xml_put( value ){
-            return this.text( value.toXMLString() )
-        }
-    )
-
 })
+
+File.fromString=
+function( path ){
+    return File( $fenix.create.fileLocal( path ) )
+}

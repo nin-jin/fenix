@@ -6,21 +6,19 @@ const Dom= $fenix.Factory( new function() {
     
     this.init=
     function init( dom ){
-        if( dom instanceof Dom ) dom= dom.nsIDOMNode()
-        
+        if( dom instanceof Dom ) return dom
         this.nsIDOMNode= function() dom
-        
         return this
     }
     
-    this.toXMLString=
-    function toXMLString( ){
-        return $fenix.service.domSerializer.serializeToString( this.nsIDOMNode() )
+    this.destroy=
+    function destroy( ){
+        this.nsIDOMNode= null
     }
     
-    this.toXML=
-    function toXML( ){
-        return new XML( this.toXMLString() )
+    this.toString=
+    function toString( ){
+        return $fenix.service.domSerializer.serializeToString( this.nsIDOMNode() )
     }
     
     this.transform=
@@ -64,12 +62,21 @@ const Dom= $fenix.Factory( new function() {
 
 })
 
-Dom.fromXMLString=
-function fromXMLString( text ){
-    let parser= $fenix.create.domParser( null, $fenix.$uri(), null )
-    let dom= parser.parseFromString( text, 'text/xml' ).documentElement
+Dom.fromString=
+function fromString( text, uri, principal ){
+    if( arguments.length < 2 ) uri= $fenix.Uri.fromString( 'null:null' ).nsIURI()
+    if( arguments.length < 3 ) principal= $fenix.create.systemPrincipal()
+    let parser= $fenix.create.domParser( principal, uri, null )
+    let dom= parser.parseFromString( String( text ), 'text/xml' ).documentElement
     if( dom.namespaceURI === 'http://www.mozilla.org/newlayout/xml/parsererror.xml' ){
         throw new Error( dom.textContent )
     }
-    return $fenix.Dom( dom )
+    return Dom( dom )
 }    
+
+Dom.fromResource=
+$fenix.FiberThread( function fromResource( resource, principal ){
+    let text= yield resource.get()
+    let dom= Dom.fromString( text, resource.nsIURI(), principal )
+    yield $fenix.FiberValue( dom )
+} )

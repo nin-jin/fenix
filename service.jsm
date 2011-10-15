@@ -15,6 +15,7 @@ let service= new function(){
     this.pref= [ '@mozilla.org/preferences-service;1', /*'nsIPrefService',*/ 'nsIPrefBranch2' ]
     this.security= [ '@mozilla.org/scriptsecuritymanager;1', 'nsIScriptSecurityManager' ]
     this.socket= [ '@mozilla.org/network/socket-transport-service;1', 'nsISocketTransportService' ]
+    this.startup= [ '@mozilla.org/toolkit/app-startup;1', 'nsIAppStartup' ]
     this.thread= [ '@mozilla.org/thread-manager;1', 'nsIThreadManager' ]
 
 }

@@ -17,6 +17,7 @@ function FiberTrigger( ){
         FiberTrigger.activate()
         doneTrigger( arguments )
     }
+    FiberTrigger.done.observe= FiberTrigger.done
 
     FiberTrigger.fail=
     function fail( ){

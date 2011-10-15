@@ -4,19 +4,18 @@ const $fenix= $()
 
 const execute= $fenix.FiberThread( function execute( command ){
     let time= Date.now()
-    let script= $fenix.dir.temp.follow( time + '.cmd' )
-    let out= script.follow( './' + time + '.out' )
+    let script= $fenix.dir.temp.go( time + '.cmd' )
+    let out= script.go( './' + time + '.out' )
 
+    yield script.put( command + ' > ' + out )
     try {
-        yield script.text( command + ' > ' + out.path() )
-        try {
-            yield script.execute()
-        } catch( exception ){
-            throw $fenix.extendException( exception, 'Command: [' + command + ']' )
-        }
-        yield out.text()
-    } finally {
-        script.exists( false )
-        out.exists( false )
+        yield script.execute()
+    } catch( exception ){
+        throw $fenix.extendException( exception, 'Command: [' + command + ']' )
     }
+    let text= yield out.get()
+    yield script.drop()
+    yield out.drop()
+    yield $fenix.FiberValue( text )
+
 } )
