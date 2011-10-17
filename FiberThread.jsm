@@ -22,7 +22,7 @@ function FiberThread( start ){
                     sub( step, subfail )
                 } catch( exception ){
                     if( exception instanceof StopIteration ) done( res )
-                    else fail( exception )
+                    else fail( exception, done )
                 }
             }
         
@@ -31,7 +31,7 @@ function FiberThread( start ){
                     var sub= context.throw( exception )
                 } catch( exception ){
                     if( exception instanceof StopIteration ) done( res )
-                    else fail( exception )
+                    else fail( exception, done )
                 }
             }
       

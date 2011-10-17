@@ -39,7 +39,7 @@ function FiberSync( map ){
         
         function subdone( ){
             if( --ballance ) return
-            done && done( result )
+            done( result )
         }
       
     } )

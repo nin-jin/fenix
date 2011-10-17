@@ -4,7 +4,7 @@ const $fenix= $( this )
 
 const Xslt= $fenix.Factory( new function() {
     
-    let nSpaces= new function() {
+    let ns= new function() {
         this.xul= 'http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul'
         this.lux= 'http://www.mozilla.org/keymaster/gatekeeper/there.is.only.lux'
     }
@@ -15,7 +15,7 @@ const Xslt= $fenix.Factory( new function() {
         dom= $fenix.Dom( dom )
         
         // security workaround 
-        dom.swapNS( nSpaces.xul, nSpaces.lux )
+        dom.swapNS( ns.xul, ns.lux )
         
         this.dom= function() dom
         
@@ -47,7 +47,7 @@ const Xslt= $fenix.Factory( new function() {
         // https://bugzilla.mozilla.org/show_bug.cgi?id=600819
         doc.appendChild( frag )
         
-        let result= $fenix.Dom( doc.documentElement ).swapNS( nSpaces.lux, nSpaces.xul )
+        let result= $fenix.Dom( doc.documentElement ).swapNS( ns.lux, ns.xul )
         
         return result;
     }

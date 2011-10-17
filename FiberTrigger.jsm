@@ -22,14 +22,14 @@ function FiberTrigger( ){
     FiberTrigger.fail=
     function fail( ){
         FiberTrigger.activate()
-        failTrigger( arguments )
+        failTrigger( arguments, doneTrigger )
     }
     
     FiberTrigger.activate=
     function activate( ){
         FiberTrigger.activate=
         function( ){
-            throw new Error( 'FiberTrigger was already activated' )
+            $fenix.fail( new Error( 'FiberTrigger was already activated' ) )
         }
     }
     
