@@ -86,3 +86,8 @@ function AutoloadFF3( baseURI ){
         
     }
 }
+
+$io
+.getProtocolHandler( 'resource' )
+.QueryInterface( $.iface.nsIResProtocolHandler )
+.setSubstitution( 'fenix', $io.newFileURI( __LOCATION__.parent ) )
