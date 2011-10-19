@@ -91,3 +91,5 @@ $io
 .getProtocolHandler( 'resource' )
 .QueryInterface( $.iface.nsIResProtocolHandler )
 .setSubstitution( 'fenix', $io.newFileURI( __LOCATION__.parent ) )
+
+$.util.import( 'resource://fenix/this.jsm' )
