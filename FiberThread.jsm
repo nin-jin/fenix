@@ -18,7 +18,7 @@ function FiberThread( start ){
             function step( arg ){
                 res= arg
                 try {
-                    var sub= arguments.length ? context.send( arg ) : context.next()
+                    var sub= context.send( arg )
                     sub( step, subfail )
                 } catch( exception ){
                     if( exception instanceof StopIteration ) done( res )
