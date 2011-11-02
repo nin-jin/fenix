@@ -8,6 +8,7 @@ let service= new function(){
     this.console= [ '@mozilla.org/consoleservice;1', 'nsIConsoleService' ]
     this.dir=[ '@mozilla.org/file/directory_service;1', /*'nsIDirectoryService',*/ 'nsIProperties' ]
     this.domSerializer= [ '@mozilla.org/xmlextras/xmlserializer;1', 'nsIDOMSerializer' ]
+    this.domParser= [ '@mozilla.org/xmlextras/domparser;1', 'nsIDOMParser' ]
     this.io= [ '@mozilla.org/network/io-service;1', 'nsIIOService' ]
     this.history= [ '@mozilla.org/browser/nav-history-service;1', 'nsINavHistoryService' ]
     this.livemark= [ '@mozilla.org/browser/livemark-service;2', 'nsILivemarkService' ]

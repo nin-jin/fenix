@@ -21,6 +21,17 @@ const Dom= $fenix.Factory( new function() {
         return $fenix.service.domSerializer.serializeToString( this.nsIDOMNode() )
     }
     
+    this.clone=
+    function clone( ){
+        return Dom( this.nsIDOMNode().cloneNode( true ) )
+    }
+    
+    this.append=
+    function parent( dom ){
+        this.nsIDOMNode().appendChild( Dom( dom ).nsIDOMNode() )
+        return this
+    }
+    
     this.transform=
     function transform( xslt ){
         return $fenix.Xslt( xslt ).process( this )
@@ -32,9 +43,11 @@ const Dom= $fenix.Factory( new function() {
     function swapNS( sourceNS, targetNS ){
         let rootNode= this.nsIDOMNode()
         let doc= rootNode.ownerDocument
-        let sourceElements= doc.evaluate( '//from:*', rootNode, function() sourceNS, null, null )
+        let sourceNodes= doc.evaluate( '//from:*', rootNode, function() sourceNS, null, null )
+        let sourceElements= []
+        for( let sourceNode; sourceNode= sourceNodes.iterateNext(); ) sourceElements.push( sourceNode )
         
-        for( let sourceNode; sourceNode= sourceElements.iterateNext(); ){
+        for each( let sourceNode in sourceElements ){
             let targetNode= xulDoc.createElementNS( targetNS, sourceNode.localName )
             targetNode= doc.importNode( targetNode, true )
             
@@ -64,13 +77,16 @@ const Dom= $fenix.Factory( new function() {
 
 Dom.fromString=
 function fromString( text, uri, principal ){
-    if( arguments.length < 2 ) uri= $fenix.Uri.fromString( 'null:null' ).nsIURI()
-    if( arguments.length < 3 ) principal= $fenix.create.systemPrincipal()
-    let parser= $fenix.create.domParser( principal, uri, null )
+    if( uri === void 0 ) uri= $fenix.Uri.fromString( 'null:null' ).nsIURI()
+    if( principal === void 0 ) principal= $fenix.create.systemPrincipal()
+    
+    let parser= $fenix.create.domParser( principal, uri, uri )
     let dom= parser.parseFromString( String( text ), 'text/xml' ).documentElement
+    
     if( dom.namespaceURI === 'http://www.mozilla.org/newlayout/xml/parsererror.xml' ){
         throw new Error( dom.textContent )
     }
+    
     return Dom( dom )
 }    
 

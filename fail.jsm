@@ -21,7 +21,7 @@ function fail( e ){
     stack= stack.join( '\n' )
   }
   
-  let message= String( e.message ) + '\n' + stack
+  let message= String( e.message ) //+ '\n' + stack
 
   let error= $fenix.create.error( message, file, source, line, null, $.iface.nsIScriptError.exceptionFlag, 'component javascript' )
   $fenix.service.console.logMessage( error )

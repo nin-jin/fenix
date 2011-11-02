@@ -9,7 +9,7 @@ function $( baseURI ){
     if( typeof baseURI === 'string' ){
         baseURI= $io.newURI( baseURI, null, $io.newURI( Components.stack.caller.filename, null, null ) )
     }
-    
+
     let instance= cache[ baseURI.spec ]
     if( instance ) return instance
     
@@ -50,6 +50,6 @@ $.gre= $( 'resource://gre/modules/' )
 $io
 .getProtocolHandler( 'resource' )
 .QueryInterface( $.iface.nsIResProtocolHandler )
-.setSubstitution( 'fenix', $io.newFileURI( __LOCATION__.parent ) )
+.setSubstitution( 'fenix', $io.newURI( Components.stack.filename.replace( /[^\/]+$/, '' ), null, null ) )
 
 $.util.import( 'resource://fenix/this.jsm' )

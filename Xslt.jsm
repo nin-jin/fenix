@@ -1,6 +1,6 @@
 "use strict"
 Components.utils.import( 'resource://fenix/this.jsm' )
-const $fenix= $( this )
+const $fenix= $()
 
 const Xslt= $fenix.Factory( new function() {
     
@@ -14,7 +14,7 @@ const Xslt= $fenix.Factory( new function() {
         if( dom instanceof $fenix.Xslt ) dom= dom.dom()
         dom= $fenix.Dom( dom )
         
-        // security workaround 
+        // security workaround https://bugzilla.mozilla.org/show_bug.cgi?id=600819
         dom.swapNS( ns.xul, ns.lux )
         
         this.dom= function() dom
@@ -22,33 +22,25 @@ const Xslt= $fenix.Factory( new function() {
         return this
     }
     
-    this.toXMLString=
+    this.toString=
     function toXMLString( ){
-        return this.xml().toXMLString()
-    }
-    
-    this.toXML=
-    function toXML( ){
-        return this.xml().toXML()
+        return String( this.dom() )
     }
     
     this.nsIXSLTProcessor=
     function nsIXSLTProcessor( ){
-        return $.create.domTransformer( this.dom().nsIDOMNode() )
+        return $fenix.create.domTransformer( this.dom().nsIDOMNode() )
     }
 
     this.process=
     function process( dom ){
-        dom= $fenix.Dom( dom )
-        
-        let doc= $fenix.create.domDoc()
-        let frag= this.nsIXSLTProcessor().transformToFragment( dom, doc )
+        let input= $fenix.Dom( dom ).nsIDOMNode()
 
-        // https://bugzilla.mozilla.org/show_bug.cgi?id=600819
-        doc.appendChild( frag )
-        
+        let doc= $fenix.create.domDoc()
+        let frag= this.nsIXSLTProcessor().transformToFragment( input, doc )
+        doc.appendChild(frag)
+
         let result= $fenix.Dom( doc.documentElement ).swapNS( ns.lux, ns.xul )
-        
         return result;
     }
 })

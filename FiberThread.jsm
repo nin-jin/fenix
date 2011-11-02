@@ -6,8 +6,10 @@ function FiberThread( start ){
     return function wrapper( ){
         let self= this
         let arg= arguments
-        return $fenix.Fiber( function fiber( done, fail ){
+        let stack= Components.stack.caller // FIXME: rebuild stack
     
+        return $fenix.Fiber( function fiber( done, fail ){
+            
             var context = start.apply( self, arg )
             if( {}.toString.apply( context ) !== '[object Generator]' ) return done( context )
             
@@ -22,16 +24,17 @@ function FiberThread( start ){
                     sub( step, subfail )
                 } catch( exception ){
                     if( exception instanceof StopIteration ) done( res )
-                    else fail( exception, done )
+                    else fail( $fenix.extendException( exception, stack ), done )
                 }
             }
         
             function subfail( exception ){
                 try {
                     var sub= context.throw( exception )
+                    sub( step, subfail )
                 } catch( exception ){
                     if( exception instanceof StopIteration ) done( res )
-                    else fail( exception, done )
+                    else fail( $fenix.extendException( exception, stack ), done )
                 }
             }
       
