@@ -7,10 +7,10 @@ function FiberTrigger( ){
     let failTrigger
     
     let FiberTrigger=
-    function trigger( done, fail ){
+    $fenix.Fiber( function trigger( done, fail ){
         doneTrigger= done
         failTrigger= fail
-    }
+    } )
 
     FiberTrigger.done=
     function done( ){
