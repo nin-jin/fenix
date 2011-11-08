@@ -80,5 +80,10 @@ const Uri= $fenix.Factory( new function Uri( ){
 
 Uri.fromString=
 function( uri ){
-    return Uri( $fenix.service.io.newURI( uri, null, null ) )
+    try {
+        uri= $fenix.service.io.newURI( String( uri ), null, null )
+    } catch( exeption ){
+        throw $fenix.extendException( exeption, 'URI: ' + uri )
+    }
+    return Uri( uri )
 }
