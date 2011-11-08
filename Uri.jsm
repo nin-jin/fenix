@@ -33,7 +33,11 @@ const Uri= $fenix.Factory( new function Uri( ){
     this.file=
     function file( ){
         return $fenix.File( this.nsIURI().QueryInterface( $.iface.nsIFileURL ).file )
-    }    
+    }
+    
+    this.scheme= function scheme( ) this.nsIURI().scheme
+    this.host= function host( ) this.nsIURI().host
+    this.path= function path( ) this.nsIURI().path
     
     this.exists=
     $fenix.FiberValue( true )
