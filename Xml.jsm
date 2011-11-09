@@ -1,8 +1,8 @@
 "use strict"
 Components.utils.import( 'resource://fenix/this.jsm' )
-const $fenix= $()
+let $fenix= $()
 
-const Xml= $fenix.Factory( new function Xml( ){
+let Xml= $fenix.Factory( new function Xml( ){
     
     this.init=
     function init( xml ){

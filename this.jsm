@@ -1,8 +1,8 @@
 "use strict"
 
-const EXPORTED_SYMBOLS= [ 'EXPORTED_SYMBOLS', '$' ]
+let EXPORTED_SYMBOLS= [ 'EXPORTED_SYMBOLS', '$' ]
 
-const cache= {}
+let cache= {}
 
 function $( baseURI ){
     if( !baseURI ) baseURI= './'

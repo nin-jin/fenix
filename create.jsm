@@ -1,7 +1,7 @@
 "use strict"
 Components.utils.import( 'resource://fenix/this.jsm' )
 
-const create= new function(){
+let create= new function(){
 
     this.converterInput= $.Maker( '@mozilla.org/intl/converter-input-stream;1', 'nsIConverterInputStream', 'init' )
     this.converterUnicode= $.Maker( '@mozilla.org/intl/scriptableunicodeconverter', 'nsIScriptableUnicodeConverter' )

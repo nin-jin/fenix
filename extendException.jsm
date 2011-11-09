@@ -1,6 +1,6 @@
 "use strict"
 Components.utils.import( 'resource://fenix/this.jsm' )
-const $fenix= $()
+let $fenix= $()
 
 function extendException( exception, message ){
     let error= new Error( exception.message + '\n' + message )

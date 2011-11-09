@@ -1,8 +1,8 @@
 "use strict"
 Components.utils.import( 'resource://fenix/this.jsm' )
-const $fenix= $()
+let $fenix= $()
 
-const Fiber= function factory( fiber ){
+let Fiber= function factory( fiber ){
     return function wrapper( done, fail ){
         if( !done ) done= function( ){ }
         if( !fail ) fail= function( exception ) $fenix.fail( exception )
