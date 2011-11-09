@@ -46,7 +46,7 @@ let Uri= $fenix.Factory( new function Uri( ){
         let [ input, status ]= yield result
 
         if( !Components.isSuccessCode( status ) ){
-            throw new Error( 'Read from [' + this.uriSource() + '] was ended with status [' + status + ']' )
+            throw new Error( 'Read from [' + this + '] was ended with status [' + status + ']' )
         } 
 
         let size= input.available()
@@ -80,5 +80,10 @@ let Uri= $fenix.Factory( new function Uri( ){
 
 Uri.fromString=
 function( uri ){
-    return Uri( $fenix.service.io.newURI( uri, null, null ) )
+    try {
+        uri= $fenix.service.io.newURI( String( uri ), null, null )
+    } catch( exeption ){
+        throw $fenix.extendException( exeption, 'URI: ' + uri )
+    }
+    return Uri( uri )
 }

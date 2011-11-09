@@ -9,11 +9,11 @@ function $( baseURI ){
     if( typeof baseURI === 'string' ){
         baseURI= $io.newURI( baseURI, null, $io.newURI( Components.stack.caller.filename, null, null ) )
     }
-    
+
     let instance= cache[ baseURI.spec ]
     if( instance ) return instance
     
-    let proto=
+    let obj=
     new function( ){
 
         this.$uri=
@@ -22,16 +22,16 @@ function $( baseURI ){
         this.$follow=
         function( relativePath ) $( $io.newURI( relativePath, null, baseURI ) )
 
-    }
+    }    
     
     return cache[ baseURI.spec ]=
     Proxy.create( new function() {
 
         this.get=
         function( proxy, name ){
-            if( name[ 0 ] === '$' ) return proto[ name ]
+            if( obj.hasOwnProperty( name ) ) return obj[ name ]
             let url= baseURI.resolve( name + '.jsm' )
-            return $.util.import( url, {} )[ name ]
+            return obj[ name ]= $.util.import( url, {} )[ name ]
         }
 
     })
@@ -50,6 +50,6 @@ $.gre= $( 'resource://gre/modules/' )
 $io
 .getProtocolHandler( 'resource' )
 .QueryInterface( $.iface.nsIResProtocolHandler )
-.setSubstitution( 'fenix', $io.newFileURI( __LOCATION__.parent ) )
+.setSubstitution( 'fenix', $io.newURI( Components.stack.filename.replace( /[^\/]+$/, '' ), null, null ) )
 
 $.util.import( 'resource://fenix/this.jsm' )

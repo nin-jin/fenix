@@ -10,7 +10,10 @@ function log( ){
         let line= Components.stack.caller.lineNumber
         let source= Components.stack.caller.sourceLine
         let type= {}.toString.apply( value ).replace( /^\[object (\w+)\]$/, '$1' )
-        let message= type + ': ' + value
+
+        let message= value
+        if( message.toXMLString ) message= message.toXMLString()
+        message= type + ': ' + message
       
         let error= $fenix.create.error( message, file, source, line, null, null, 'component javascript' )
         $fenix.service.console.logMessage( error )

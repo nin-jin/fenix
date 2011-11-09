@@ -1,0 +1,10 @@
+"use strict"
+Components.utils.import( 'resource://fenix/this.jsm' )
+let $fenix= $()
+
+let FiberStarter= function( fiber ){
+    fiber= $fenix.FiberThread( fiber )
+    return function wrapper( ){
+        return fiber.apply( this, arguments )()
+    }
+}

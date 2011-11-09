@@ -3,7 +3,9 @@ Components.utils.import( 'resource://fenix/this.jsm' )
 let $fenix= $()
 
 function FiberSync( map ){
-    return $fenix.Fiber( function fiber( done, fail ){
+    if( !map ) map= []
+    
+    let sync= $fenix.Fiber( function fiber( done, fail ){
         var result= []
         var ballance= 1
         
@@ -43,4 +45,12 @@ function FiberSync( map ){
         }
       
     } )
+    
+    sync.add=
+    function add( fiber ){
+        map.push( fiber )
+        return sync
+    }
+    
+    return sync
 }
