@@ -1,8 +1,8 @@
 "use strict"
 Components.utils.import( 'resource://fenix/this.jsm' )
-const $fenix= $( this )
+let $fenix= $( this )
 
-const Xslt= $fenix.Factory( new function() {
+let Xslt= $fenix.Factory( new function() {
     
     let ns= new function() {
         this.xul= 'http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul'

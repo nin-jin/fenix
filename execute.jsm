@@ -1,8 +1,8 @@
 "use strict"
 Components.utils.import( 'resource://fenix/this.jsm' )
-const $fenix= $()
+let $fenix= $()
 
-const execute= $fenix.FiberThread( function execute( command ){
+let execute= $fenix.FiberThread( function execute( command ){
     let time= Date.now()
     let script= $fenix.dir.temp.go( time + '.cmd' )
     let out= script.go( './' + time + '.out' )
