@@ -1,5 +1,6 @@
 "use strict"
 Components.utils.import( 'resource://fenix/this.jsm' )
+const $fenix= $()
 
 function autoBind( proto, key, func ){
     proto.__defineGetter__( key, function lazy( ){
@@ -7,18 +8,18 @@ function autoBind( proto, key, func ){
         let self= this
         
         let wrapper=
-        function wrapper( ){
-            return func.apply( self, arguments )
-        }
+        Proxy.createFunction( new function() {
+
+            this.get=
+            function( proxy, name ){
+                return func[ name ]
+            }
+
+        }, function( ) func.apply( self, arguments ) )
         
-        wrapper.toString=
-        function wrapper_toString( ){
-            return String( func )
-        }
-        
-        wrapper.observe= wrapper
-        wrapper.handleEvent= wrapper
-        wrapper.notify= wrapper
+        //wrapper.observe= wrapper
+        //wrapper.handleEvent= wrapper
+        //wrapper.notify= wrapper
         
         delete proto[ key ]
         this[ key ]= wrapper

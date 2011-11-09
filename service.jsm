@@ -8,6 +8,8 @@ let service= new function(){
     this.console= [ '@mozilla.org/consoleservice;1', 'nsIConsoleService' ]
     this.dir=[ '@mozilla.org/file/directory_service;1', /*'nsIDirectoryService',*/ 'nsIProperties' ]
     this.domSerializer= [ '@mozilla.org/xmlextras/xmlserializer;1', 'nsIDOMSerializer' ]
+    this.domParser= [ '@mozilla.org/xmlextras/domparser;1', 'nsIDOMParser' ]
+    this.idn= [ '@mozilla.org/network/idn-service;1', 'nsIIDNService' ]
     this.io= [ '@mozilla.org/network/io-service;1', 'nsIIOService' ]
     this.history= [ '@mozilla.org/browser/nav-history-service;1', 'nsINavHistoryService' ]
     this.livemark= [ '@mozilla.org/browser/livemark-service;2', 'nsILivemarkService' ]
@@ -17,6 +19,7 @@ let service= new function(){
     this.socket= [ '@mozilla.org/network/socket-transport-service;1', 'nsISocketTransportService' ]
     this.startup= [ '@mozilla.org/toolkit/app-startup;1', 'nsIAppStartup' ]
     this.thread= [ '@mozilla.org/thread-manager;1', 'nsIThreadManager' ]
+    this.utf8= [ '@mozilla.org/intl/utf8converterservice;1', 'nsIUTF8ConverterService' ]
 
 }
 
