@@ -9,6 +9,7 @@ let service= new function(){
     this.dir=[ '@mozilla.org/file/directory_service;1', /*'nsIDirectoryService',*/ 'nsIProperties' ]
     this.domSerializer= [ '@mozilla.org/xmlextras/xmlserializer;1', 'nsIDOMSerializer' ]
     this.domParser= [ '@mozilla.org/xmlextras/domparser;1', 'nsIDOMParser' ]
+    this.favicon= [ '@mozilla.org/browser/favicon-service;1', 'nsIFaviconService' ]
     this.idn= [ '@mozilla.org/network/idn-service;1', 'nsIIDNService' ]
     this.io= [ '@mozilla.org/network/io-service;1', 'nsIIOService' ]
     this.history= [ '@mozilla.org/browser/nav-history-service;1', 'nsINavHistoryService' ]

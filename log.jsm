@@ -12,7 +12,7 @@ function log( ){
         let type= {}.toString.apply( value ).replace( /^\[object (\w+)\]$/, '$1' )
 
         let message= value
-        if( message.toXMLString ) message= message.toXMLString()
+        if( message && message.toXMLString ) message= message.toXMLString()
         message= type + ': ' + message
       
         let error= $fenix.create.error( message, file, source, line, null, null, 'component javascript' )

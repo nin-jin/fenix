@@ -11,7 +11,7 @@ let Xslt= $fenix.Factory( new function() {
 
     this.init=
     function init( dom ){
-        if( dom instanceof $fenix.Xslt ) dom= dom.dom()
+        if( dom instanceof $fenix.Xslt ) return dom
         dom= $fenix.Dom( dom )
         
         // security workaround https://bugzilla.mozilla.org/show_bug.cgi?id=600819
@@ -27,9 +27,16 @@ let Xslt= $fenix.Factory( new function() {
         return String( this.dom() )
     }
     
+    this.nsIDOMNode=
+    function nsIDOMNode( ){
+        return this.dom().nsIDOMNode()
+    }
+    
+    this._nsIXSLTProcessor= null
     this.nsIXSLTProcessor=
     function nsIXSLTProcessor( ){
-        return $fenix.create.domTransformer( this.dom().nsIDOMNode() )
+        if( this._nsIXSLTProcessor ) return this._nsIXSLTProcessor
+        return this._nsIXSLTProcessor= $fenix.create.domTransformer( this.nsIDOMNode() )
     }
 
     this.process=
