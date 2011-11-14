@@ -20,23 +20,24 @@ const LazyResource= function LazyResource( getter, invalidator ){
         }
     } )
   
-    prop.drop= $fenix.FiberThread( function drop( key ){
+    prop.drop= function drop( key ){
         if( cache ){
             if( key === void 0 ){
                 cache= void 0
-                if( invalidator ) yield invalidator.apply( this(), arguments )
+                if( invalidator ) return invalidator.apply( this(), arguments )
             } else {
                 let key= key4args( arguments )
                 let value= cache[ key ]
                 if( value !== void 0 ){
                     cache[ key ]= void 0
                     if( invalidator ){
-                        yield invalidator.apply( this(), arguments )
+                        return invalidator.apply( this(), arguments )
                     }
                 }
             }
         }
-    } )
+        return $fenix.FiberValue()
+    }
   
     prop.toString= function toString() String( getter )
     
