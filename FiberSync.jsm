@@ -5,7 +5,7 @@ let $fenix= $()
 function FiberSync( map ){
     if( !map ) map= []
     
-    let sync= $fenix.Fiber( function fiber( done, fail ){
+    let sync= $fenix.Fiber({ runAsync: function fiber( done, fail ){
         var result= []
         var ballance= 1
         
@@ -17,7 +17,7 @@ function FiberSync( map ){
             let catche= catcher( key )
             
             try {
-                map[ key ]( receive, catche )
+                map[ key ].runAsync( receive, catche )
             } catch( exception ){
                 catche( exception )
             }
@@ -44,7 +44,7 @@ function FiberSync( map ){
             done( result )
         }
       
-    } )
+    } })
     
     sync.add=
     function add( fiber ){

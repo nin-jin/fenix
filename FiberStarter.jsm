@@ -2,9 +2,9 @@
 Components.utils.import( 'resource://fenix/this.jsm' )
 let $fenix= $()
 
-let FiberStarter= function( fiber ){
-    fiber= $fenix.FiberThread( fiber )
+let FiberStarter= function( Fiber ){
+    Fiber= $fenix.FiberThread( Fiber )
     return function wrapper( ){
-        return fiber.apply( this, arguments )()
+        return Fiber.apply( this, arguments ).runAsync()
     }
 }
