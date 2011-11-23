@@ -28,7 +28,7 @@ let Dom= $fenix.Factory( new function() {
     
     this.append=
     function parent( dom ){
-        this.nsIDOMNode().appendChild( Dom( dom ).nsIDOMNode() )
+        this.nsIDOMNode().appendChild( Dom( dom ).clone().nsIDOMNode() )
         return this
     }
     

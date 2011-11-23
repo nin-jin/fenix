@@ -1,6 +1,6 @@
 "use strict"
 Components.utils.import( 'resource://fenix/this.jsm' )
-const $fenix= $( '../fx/' )
+const $fenix= $()
 
 const LazyResource= function LazyResource( getter, invalidator ){
     getter= $fenix.FiberThread( getter )

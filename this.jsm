@@ -31,7 +31,12 @@ function $( baseURI ){
         function( proxy, name ){
             if( obj.hasOwnProperty( name ) ) return obj[ name ]
             let url= baseURI.resolve( name + '.jsm' )
-            return obj[ name ]= $.util.import( url, {} )[ name ]
+            try {
+                return obj[ name ]= $.util.import( url, {} )[ name ]
+            } catch( exception ){
+                Components.utils.reportError( 'Fail to load [' + url + ']' )
+                throw exception
+            }
         }
 
     })
