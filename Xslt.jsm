@@ -42,12 +42,12 @@ let Xslt= $fenix.Factory( new function() {
     this.process=
     function process( dom ){
         let input= $fenix.Dom( dom ).nsIDOMNode()
+        let doc= $fenix.Dom.fromString( '<xml/>' ).doc()
 
-        let doc= $fenix.create.domDoc()
-        let frag= this.nsIXSLTProcessor().transformToFragment( input, doc )
-        doc.appendChild(frag)
+        let frag= this.nsIXSLTProcessor().transformToFragment( input, doc.nsIDOMDocument() )
+        doc.root().drop()
+        doc.append( frag )
 
-        let result= $fenix.Dom( doc.documentElement ).swapNS( ns.lux, ns.xul )
-        return result;
+        return doc.root().swapNS( ns.lux, ns.xul )
     }
 })

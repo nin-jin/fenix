@@ -11,6 +11,22 @@ let Dom= $fenix.Factory( new function() {
         return this
     }
     
+    this.nsIDOMDocument=
+    function nsIDOMDocument( ){
+        let nsIDOMNode= this.nsIDOMNode()
+        return nsIDOMNode.ownerDocument || nsIDOMNode
+    }
+    
+    this.doc=
+    function doc( ){
+        return $fenix.Dom( this.nsIDOMDocument() )
+    }
+    
+    this.root=
+    function doc( ){
+        return $fenix.Dom( this.nsIDOMDocument().documentElement )
+    }
+    
     this.destroy=
     function destroy( ){
         this.nsIDOMNode= null
@@ -19,6 +35,13 @@ let Dom= $fenix.Factory( new function() {
     this.toString=
     function toString( ){
         return $fenix.service.domSerializer.serializeToString( this.nsIDOMNode() )
+    }
+    
+    this.drop=
+    function drop( ){
+        let nsIDOMNode= this.nsIDOMNode()
+        nsIDOMNode.parentNode.removeChild( nsIDOMNode )
+        return this
     }
     
     this.clone=
@@ -41,9 +64,8 @@ let Dom= $fenix.Factory( new function() {
 
     this.swapNS=
     function swapNS( sourceNS, targetNS ){
-        let rootNode= this.nsIDOMNode()
-        let doc= rootNode.ownerDocument
-        let sourceNodes= doc.evaluate( '//from:*', rootNode, function() sourceNS, null, null )
+        let doc= this.nsIDOMDocument()
+        let sourceNodes= doc.evaluate( '//from:*', this.nsIDOMNode(), function() sourceNS, null, null )
         let sourceElements= []
         for( let sourceNode; sourceNode= sourceNodes.iterateNext(); ) sourceElements.push( sourceNode )
         
@@ -78,8 +100,8 @@ let Dom= $fenix.Factory( new function() {
 Dom.fromString=
 function fromString( text, uri, principal ){
     if( uri === void 0 ) uri= $fenix.Uri.fromString( 'null:null' ).nsIURI()
-    if( principal === void 0 ) principal= $fenix.create.systemPrincipal()
-    
+    if( principal === void 0 ) principal= this
+
     let parser= $fenix.create.domParser( principal, uri, uri )
     let dom= parser.parseFromString( String( text ), 'text/xml' ).documentElement
     
@@ -89,6 +111,11 @@ function fromString( text, uri, principal ){
     
     return Dom( dom )
 }    
+
+Dom.fromHTMLString=
+function fromHTMLString( text ){
+    return $fenix.Dom( $fenix.create.htmlDoc().createRange().createContextualFragment( text ) )
+}
 
 Dom.fromResource=
 $fenix.FiberThread( function fromResource( resource, principal ){
