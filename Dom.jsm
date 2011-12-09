@@ -37,6 +37,24 @@ let Dom= $fenix.Factory( new function() {
         return $fenix.service.domSerializer.serializeToString( this.nsIDOMNode() )
     }
     
+    this.select=
+    function select( xpath, xmlns ){
+        let found= this.nsIDOMDocument().evaluate( xpath, this.nsIDOMNode(), function( prefix ) xmlns[ prefix ], null, null )
+        let list= []
+        for( let node; node= found.iterateNext(); ) list.push( $fenix.Dom( node ) )
+        return list
+    }
+    
+    this.name=
+    function name( ){
+        return this.nsIDOMNode().nodeName
+    }
+    
+    this.value=
+    function value( ){
+        return this.nsIDOMNode().textContent
+    }
+    
     this.drop=
     function drop( ){
         let nsIDOMNode= this.nsIDOMNode()

@@ -30,7 +30,7 @@ function fromString( text ){
 
 Xml.fromResource=
 $fenix.FiberThread( function fromResource( resource, principal ){
-    let dom= yield Dom.fromResource( resource, principal )
+    let dom= yield $fenix.Dom.fromResource( resource, principal )
     let xml= Xml.fromString( dom )
     yield $fenix.FiberValue( xml )
 } )

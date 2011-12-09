@@ -8,6 +8,6 @@ function FiberPipe( ){
         for( var i= 0; i < fiberList.length; ++i ){
             yield fiberList[ i ]
         }
-    })
+    })()
 }
 

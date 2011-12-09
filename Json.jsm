@@ -6,7 +6,7 @@ let Json= $fenix.Factory( new function Json( ){
     
     this.init=
     function init( json ){
-        if( dom instanceof Json ) return json
+        if( json instanceof Json ) return json
         this.raw= function() json
         return this
     }
@@ -28,7 +28,7 @@ function fromString( text ){
     return Json( JSON.parse( String( text ) ) )
 }    
 
-Dom.fromResource=
+Json.fromResource=
 $fenix.FiberThread( function fromResource( resource ){
     let text= yield resource.get()
     let json= Json.fromString( text )
