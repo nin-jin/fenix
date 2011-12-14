@@ -33,7 +33,6 @@ let ProxyMap= $fenix.Factory( new function ProxyMap_proto( ){
             if( !val ) return val
             list.push( val )
         }
-        $fenix.log(name,list)
         return $fenix.ProxyMap( list ).map
     }
     
@@ -54,7 +53,7 @@ let ProxyMap= $fenix.Factory( new function ProxyMap_proto( ){
                 for each( let obj in list ){
                     result.push( obj.apply( this, arguments ) )
                 }
-                return result
+                return $fenix.ProxyMap( result )
             }
     
             return Proxy.createFunction( { get: get, set: set, list: this.list }, callTrap )
