@@ -26,7 +26,6 @@ const LazyResource= function LazyResource( getter, invalidator ){
                 cache= void 0
                 if( invalidator ) return invalidator.apply( this(), arguments )
             } else {
-                let key= key4args( arguments )
                 let value= cache[ key ]
                 if( value !== void 0 ){
                     cache[ key ]= void 0
@@ -43,8 +42,4 @@ const LazyResource= function LazyResource( getter, invalidator ){
     
     return prop
 
-}
-
-function key4args( args ){
-    return [].join.call( args, '\n' )
 }

@@ -12,6 +12,11 @@ let ProxyMap= $fenix.Factory( new function ProxyMap_proto( ){
         return this
     }
     
+    this.destroy=
+    function destroy( ){
+        this.list= null
+    }
+    
     this.add=
     function add( obj ){
         this.drop( obj )
@@ -22,7 +27,7 @@ let ProxyMap= $fenix.Factory( new function ProxyMap_proto( ){
     this.drop=
     function drop( obj ){
         let index= this.list.indexOf( obj )
-        this.list.splice( index, 1 )
+        if( ~index ) this.list.splice( index, 1 )
         return this
     }
     
