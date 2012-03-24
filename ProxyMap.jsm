@@ -31,6 +31,11 @@ let ProxyMap= $fenix.Factory( new function ProxyMap_proto( ){
         return this
     }
     
+    this.count=
+    function count( ){
+        return this.list.length
+    }
+    
     function get( proxy, name ){
         let list= []
         for each( let [key,obj] in Iterator(this.list) ) {
@@ -52,7 +57,7 @@ let ProxyMap= $fenix.Factory( new function ProxyMap_proto( ){
     (   'map'
     ,   function( ){
             let list= this.list
-
+            
             function callTrap( ){
                 let result= []
                 for each( let obj in list ){
@@ -60,8 +65,17 @@ let ProxyMap= $fenix.Factory( new function ProxyMap_proto( ){
                 }
                 return $fenix.ProxyMap( result )
             }
-    
+            
             return Proxy.createFunction( { get: get, set: set, list: this.list }, callTrap )
+        }
+    )
+    
+    this.__defineSetter__
+    (   'map'
+    ,   function( hash ){
+            for( var key in hash ){
+                this.map[ key ]= hash[ key ]
+            }
         }
     )
     

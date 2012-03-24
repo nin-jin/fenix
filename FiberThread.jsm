@@ -21,7 +21,7 @@ function FiberThread( starter ){
                 return result
             }
         ,   runAsync: function fiber( done, fail ){
-            
+                
                 let[ isGenerator, context ]= start()
                 if( !isGenerator ) return done( context )
                 

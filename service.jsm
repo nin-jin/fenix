@@ -3,6 +3,7 @@ Components.utils.import( 'resource://fenix/this.jsm' )
 
 let service= new function(){
 
+    this.alert= [ '@mozilla.org/alerts-service;1', 'nsIAlertsService' ]
     this.appInfo= [ '@mozilla.org/xre/app-info;1', /*'nsIXULAppInfo',*/ 'nsIXULRuntime' ]
     this.bookmark= [ '@mozilla.org/browser/nav-bookmarks-service;1', 'nsINavBookmarksService' ]
     this.console= [ '@mozilla.org/consoleservice;1', 'nsIConsoleService' ]
@@ -10,6 +11,7 @@ let service= new function(){
     this.domSerializer= [ '@mozilla.org/xmlextras/xmlserializer;1', 'nsIDOMSerializer' ]
     this.domParser= [ '@mozilla.org/xmlextras/domparser;1', 'nsIDOMParser' ]
     this.favicon= [ '@mozilla.org/browser/favicon-service;1', 'nsIFaviconService' ]
+    this.geo= [ '@mozilla.org/geolocation;1', 'nsIDOMGeoGeolocation' ]
     this.idn= [ '@mozilla.org/network/idn-service;1', 'nsIIDNService' ]
     this.io= [ '@mozilla.org/network/io-service;1', 'nsIIOService' ]
     this.history= [ '@mozilla.org/browser/nav-history-service;1', 'nsINavHistoryService' ]
