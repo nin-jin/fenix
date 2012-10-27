@@ -6,8 +6,19 @@ let cache= {}
 
 function $( baseURI ){
     if( !baseURI ) baseURI= './'
+    
     if( typeof baseURI === 'string' ){
-        baseURI= $io.newURI( baseURI, null, $io.newURI( Components.stack.caller.filename, null, null ) )
+        
+        let caller= Components.stack.caller
+        while( !caller.filename ){
+            caller= caller.caller
+            if( caller ) continue
+            
+            $.util.reportError( 'Can not resolve [' + baseURI + ']' )
+            return
+        }
+        
+        baseURI= $io.newURI( baseURI, null, $io.newURI( caller.filename, null, null ) )
     }
 
     let instance= cache[ baseURI.spec ]
@@ -15,18 +26,18 @@ function $( baseURI ){
     
     let obj=
     new function( ){
-
+        
         this.$uri=
         function() baseURI
         
         this.$follow=
         function( relativePath ) $( $io.newURI( relativePath, null, baseURI ) )
-
+        
     }    
     
     return cache[ baseURI.spec ]=
     Proxy.create( new function() {
-
+        
         this.get=
         function( proxy, name ){
             if( obj.hasOwnProperty( name ) ) return obj[ name ]
@@ -38,7 +49,7 @@ function $( baseURI ){
                 throw exception
             }
         }
-
+        
     })
 }
 
